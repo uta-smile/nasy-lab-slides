@@ -1,0 +1,86 @@
+#+options: ':nil *:t -:t ::t <:t H:2 \n:nil ^:{} arch:headline
+#+options: author:t broken-links:mark c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:t todo:t |:t
+#+title: T-Cell Receptor-Peptide Interaction Prediction with Physical Model Augmented Pseudo-Labeling
+#+date: <2022-09-16 Fri>
+#+author: Nasy
+#+email: nasyxx@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.0.50 (Org mode 9.5.4)
+#+cite_export: biblatex oscola
+
+#+setupfile: setup.org
+
+* Introduction
+
+** Problem
+
++ Current datasets for training deep learning models of this purpose remain constrained without diverse TCRs and peptides.
+
+** Solve
+
++ Extend the training dataset by physical modeling of TCR-peptide pairs
+   - Compute the docking energies between auxiliary unknown TCR-peptide pairs as surrogate training labels.
+   - Train our model in a supervised fashion
+   - The AUC score for the prediction of the model can be further
+      improved by pseudo-labeling of such unknown TCR-peptide pairs
+      (by a trained teacher model), and retraining the model with
+      those pseudo-labeled TCR-peptide pairs.
+
++ Data-augmented pseudolabeling of TCR-peptide pairs by a model first trained on the labeled dataset (then re-train the model)
++ Physical modeling between TCRs and peptides by docking
+
+* TODO Related works
+
+Conventional methods for predicting TCR-peptide interactions include
+nearest neighbor (SwarmTCR [10]), distance-based minimization (TCRdist
+[7]), PCA with decision tree [42], and Random Forest [9, 12].
+
+** Docking
+
+Docking is a computational method for predicting the structures of
+protein complex (e.g., dimer of two molecules) given the structure of
+each monomer. It searches the configuration of the complex by
+minimizing an energy scoring function.
+
+In this work, they use the final docking energy (of the optimal
+structure of the complex) between a TCR and peptide as the surrogate
+binding label for the TCR-peptide pair.
+
+With HDOCK[cite:@yanHDOCKServerIntegrated2020a]
+
+* Method
+
++ NN Based on ERGO[cite:@springerPredictionSpecificTCRPeptide2020].
+   - TCR -> LSTM/AE
+   - Peptide -> LSTM
+   - (TCR & Peptide) -> MLP
+   - $pred = f(t, p)$
+   - BCE Loss: $L_{label} = BCE(pred, y)$
+
++ Pseudo-labeled Pairs
+   - $prob = f_{teacher}(t, p)$
+   - $pred = f(t, p)$
+   - $L_{pl} = KL-divergence(pred, prob)$
+
++ Physical Modeling
+   - Accurate: Molecular dynamic (MD) but slow.
+   - Docking energy
+   - TCR/Peptide -> BLAST+ -> MSA -> MODELLER -> Structure -> Docking energy
+      * Top 25% Neg
+      * Bottom 25% Pos
+   - $L_{phy} = BCE(pred, y)$
+
++ Final
+   - $L = \alpha L_{label} + \beta L_{phy} + \gamma L_{pl}$
+   - All 1.
+
++ Look ahead meta-update
+
+#+name: fig:pm
+#+caption: Overview of learning from data-augmented pseudolabeling. An ERGO model is first learned with TCRs and peptides sample from Dtrain, and this model is used as the teacher model. Then, this teacher model is used for pseudolabeling TCR-peptide pairs from auxiliary dataset. Finally, we re-train an ERGO model with the original dataset and the extended pseudo-labeled dataset.
+[[./pm.png]]

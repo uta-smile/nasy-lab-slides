@@ -1,0 +1,321 @@
+#+options: ':nil *:t -:t ::t <:t H:2 \n:nil ^:{} arch:headline
+#+options: author:t broken-links:mark c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:t todo:t |:t
+#+title: Heterogeneous Graph
+#+date: <2022-07-31 Sun>
+#+author: Nasy
+#+email: nasyxx@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.0.50 (Org mode 9.5.4)
+#+cite_export: biblatex oscola
+
+#+setupfile: setup.org
+
+#+latex_header: \usepackage{fontspec}
+#+latex_header: \usepackage[slantfont, boldfont]{xeCJK}
+#+latex_header: \setCJKmainfont{STFLGQKJF}
+
+* Introduction
+
+** Heterogeneous Graph
+
+Heterogeneous graph (HG), also known as heterogeneous information network (HIN).
+
+#+attr_latex: :height 5cm
+#+name: fig:1
+#+caption: \tiny Figure excerpted from [cite/ft/f:@wangSurveyHeterogeneousGraph2022].  Illustration of The heterogeneous graph. (a) An academic network including four types of node (i.e., Author, Paper, Venue, Term) and three types of link (i.e., Publish, Contain, Write). (b) Network schema of the academic network. (c) Two meta-paths used in the academic network (i.e., Author-Paper-Author (APA) and Author-Paper-Conference/Venue-Paper-Author (APCPA)). (d) A meta-graph used in the academic network.
+[[./p1.png]]
+
+** Heterogeneous graph
+
+*** Heterogeneous graph                            :B_definition:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+A heterogeneous graph can represent as a graph \(\mathcal{G} =
+(\mathcal{V}, \mathcal{E})\), where each node \(v \in \mathcal{V}\),
+and each edge \(e \in \mathcal{E}\) contain their own type \(\tau(v)\)
+and \(\phi(e)\).  \(\tau_{v}\) and \(\phi_{e}\) are two mapping
+functions, where \(\tau_{v}:V\rightarrow\mathcal{A}\) denotes node
+types and \(\phi_{e}:\mathcal{E}\rightarrow\mathcal{R}\) represents
+edge types.  The network schema is a graph defined over node types
+\(\mathcal{A}\) and edge types \(\mathcal{R}\) following the
+relations.
+
+*** Meta-path                                      :B_definition:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+A meta-path \(m\) is based on a network schema \(\mathcal{S}\), which is
+denoted as \(m = A_1 \overset{R_1}{\rightarrow} A_2 \overset{R_2}{\rightarrow}
+... \overset{R_{l+1}}{\rightarrow} A_{l+1}\) (i.e., \(A_1A_2...A_{l+1}\)), where
+node type \(A_{l} \in \mathcal{A}\) and link type \(R_{l} \in
+\mathcal{R}\).  Different meta-paths describe the semantic relations from
+different views.
+
+*** Meta-graph                                     :B_definition:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+A meta-graph, \(\mathcal{T} = (V_{\mathcal{T}}, E_{\mathcal{T}})\) can
+be seen as a directed acyclic graph (DAG) composed of multiple
+meta-path with common nodes, where \(V_{\mathcal{T}}\) is the set of
+nodes, and \(E_{\mathcal{T}}\) is the set of edges.
+
+* RGCN
+
+** RGCN                                        :B_ignoreheading:
+:PROPERTIES:
+:BEAMER_env: frame
+:BEAMER_envargs: c
+:END:
+
+#+begin_center
+\Huge Modeling Relational Data with Graph Convolutional Networks
+#+end_center
+
+[cite//f:@schlichtkrullModelingRelationalData2018]
+
+** Introduction
+
+R-GCN is one of the first attempts using graph convolutional networks
+on Heterogeneous graph.  It solved the use of GCN to deal with the
+influence of different edge relationships on nodes in the graph
+structure, which is also a point ignored in GCN, without considering
+the relationship between nodes.
+
+** Model
+
+R-GCN is implemnted based on a simple differentiable message-passing
+framework:
+
+\[h_{i}^{(l+1)} = \sigma (\sum_{m \in \mathcal{M}_i}g_m(h_i^{l},
+h_j^{l}))\]
+
++ $h_{i}^{l} \in \mathbb{R}^{d^{(l)}}$ and $h_{j}^{l} \in
+  \mathbb{R}^{d^{(l)}}$ are the hidden states of node $v_i$ and $v_j$
+  in the \(l\)-th layer
++ $\mathcal{M}_i$ represents the set of incoming messages for node $v_i$
++ \(g_m(h_i^{l}, h_j^{l}) = Wh_j\) is typically chosen to be a
+  (message-specific) neural network-like function or simply a linear
+  transformation with the weight matrixs \(W\).
+
+** Model -- Forward
+
+*** For an entity (node \(v_{i}\))               :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.4
+:END:
+
+\[
+h_{i}^{(l+1)}=\sigma\left(\sum_{r \in
+\mathcal{R}} \sum_{j \in \mathcal{N}_{i}^{r}} \frac{1}{c_{i, r}}
+W_{r}^{(l)} h_{j}^{(l)}+W_{0}^{(l)} h_{i}^{(l)}\right)
+\]
+where
+\(\mathcal{N}_i^r\) denotes the set of neighbor indices of node \(i\)
+under relation \(r \in \mathcal{R}\),
+\(c\) is the problem-specific normalization contsant,
+and \(\sigma\) is the activation function.
+
+*** Single R-GCN layer                           :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:BEAMER_env: block
+:END:
+
+#+attr_latex: :height 5cm
+#+caption: \tiny Figure excerpted from RGCN [cite/l:@schlichtkrullModelingRelationalData2018].  rel_{1} (in) and rel_{1} (out) denote the incoming and outgoing activations from the nodes connected by relation 1, respectively. Similar processes are implemented for other relations.
+[[./p2.png]]
+
+** Optimizetion for large graph (TODO: need fig)
+
+*** Why?                                               :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+Overfitting on rare relations
+
+*** How to solve?                                      :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
++ basis-decomposition: \(W_{r}^{(l)}=\sum_{b=1}^{B} a_{r b}^{(l)} V_{b}^{(l)}\)
+
++ block-diagonal decomposition: \(W_{r}^{(l)}=\bigoplus_{b=1}^{B} Q_{b r}^{(l)}\)
+
+where \(Q_{b r}\) is the diagonal matrix:
+\(\mathrm{diag}(Q_{1r}^{(l)},...,Q_{Br}^{(l)})\) with \(Q_{br}^{(l)} \in
+\mathbb{R}^{(\nicefrac{d^{(l+1)}}{B}) \times
+(\nicefrac{d^{(l)}}{B})}\).
+
+* HetGNN
+
+** HetGNN                                     :B_ignoreheading:
+:PROPERTIES:
+:BEAMER_env: frame
+:BEAMER_envargs: c
+:END:
+
+#+begin_center
+\Huge Heterogeneous Graph Neural Network
+#+end_center
+
+[cite/t/f:@zhangHeterogeneousGraphNeural2019]
+
+** Introduction
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+*** Problem                                            :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+Designing a model \(F\) to learn embeddings \(\mathcal{E} \in
+\mathbb{R}^{|\mathcal{V}| \times d}(d \ll |\mathcal{V}|)\) that is
+able to encode both heterogeneous structural closeness and
+unstructured contents.
+
+*** Challenges                                         :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
++ Nodes in HG may not connect to all types of the neighbors. For
+  exapmle, in \emph{author-paper-venue} network in Figure [[fig:1]], the
+  \emph{author-venue} do not connect directly, while they may still
+  express strong correlations.
++ A node in HG may include multiple unstructured heterogeneous
+  contents, e.g., text, image, and attributes.
++ Different types of the neighbors contribute differently to the
+  target node embeddings in HG.  For example, the \emph{author} and
+  \emph{paper} should have different contribution to \emph{venue}
+  embeddings.
+
+** Model
+
+#+attr_latex: :height 7cm
+#+caption: \tiny Figure excerpted from HetGNN [cite:@zhangHeterogeneousGraphNeural2019].  (a) The overall architecture of HetGNN: it first samples fix sized heterogeneous neighbors for each node (node a in this case), next encodes each node content embedding via NN-1, then aggregates content embeddings of the sampled heterogeneous neighbors through NN-2 and NN-3, finally optimizes the model via a graph context loss; (b) NN-1: node heterogeneous contents encoder; (c) NN-2: type-based neighbors aggregator; (d) NN-3: heterogeneous types combination.
+[[./p3.png]]
+
+* HAN
+
+** HAN                                        :B_ignoreheading:
+:PROPERTIES:
+:BEAMER_env: frame
+:BEAMER_envargs: c
+:END:
+
+#+begin_center
+\Huge Heterogeneous Graph Attention Networks
+#+end_center
+
+[cite/t/f:@wangHeterogeneousGraphAttention2019]
+
+** Introduction
+
++ The first to propose learning both node-level attention and
+  semantic-level attention in HG.
++ The node-level attention is utilized to learn the importance between
+  a node and its neighbors.
++ The semantic-level attention is responsible for learning the
+  importance between meta-path.
+
+** Model
+
+#+attr_latex: :height 6cm
+#+caption: \footnotesize Figure excerpted from HAN [cite:@wangHeterogeneousGraphAttention2019]. The overall framework of the proposed HAN. (a) All types of nodes are projected into a unified feature space and the weight of meta-path based node pair can be learned via node-level attention. (b) Joint learning the weight of each meta-path and fuse the semantic-specific node embedding via semantic-level attention. (c) Calculate the loss and endto-end optimization for the proposed HAN.
+[[./p5.png]]
+
+** Model
+
+#+attr_latex: :height 6cm
+#+caption: \small Figure excerpted from HAN [cite:@wangHeterogeneousGraphAttention2019]. Illustration of the aggregating process in both node-level and semantic-level.
+[[./p4.png]]
+
+* HGT
+
+** HGT                                        :B_ignoreheading:
+:PROPERTIES:
+:BEAMER_env: frame
+:BEAMER_envargs: c
+:END:
+
+#+begin_center
+\Huge Heterogeneous Graph Transformer
+#+end_center
+
+[cite:@huHeterogeneousGraphTransformer2020]
+
+** Introduction
+
+Heterogeneous Graph Transformer (HGT) proposes to learn the
+meta-relations for heterogeneous graph by parameterizing weight
+matrices for heterogeneous mutual attention and message passing.
+
+** Limitations when utilizing traditional methods on HG
+
++ The construction of meta-path needs domain knowledge;
++ The features are simply either shared for different types of
+  nodes/edges or keep distinct for non-sharing weights for nodes/edges alone;
++ The scalability is limited when modeling Web-scale (large)
+  heterogeneous graph
+
+** Workflow
+
++ Heterogeneous Mutual Attention, which is used to learn from the
+  embeddings of source nodes and the target node, and output the
+  edge-related attention matrices;
++ Heterogeneous Message Passing, which is utilized to output the
+  message of edges; (3)
++ Target-Specific Aggregation, which is responsible for aggregating the neighbors’ information.
+
+** Model
+
+#+attr_latex: :height 6cm
+#+caption: \small Figure excerpted from HGT [cite:@huHeterogeneousGraphTransformer2020]. The overall architecture of Heterogeneous Graph Transformer (HGT)
+[[./p6.png]]
+
+** Heterogeneous Mutual Attention (TODO: in detail or ignore)
+
+\begin{align}
+{\bf Attention}_{HGT}(s,e,t)& = \underset{\forall s \in N(t)}{\text{Softmax}}\Big (\underset{i \in [1,h]}{{\mathbin \Vert }}ATT\text{-}head^{i}(s,e,t)\Big)\\
+ATT\text{-}head^{i}(s,e,t)& = \Big (K^i(s)\ W^{ATT}_{\phi (e)}\ Q^i(t)^T\Big) \cdot \frac{{\mu }_{\langle \tau (s), \phi (e), \tau (t) \rangle }}{\sqrt {d}} \nonumber \\
+K^i(s)& = \text{K-Linear}^i_{\tau (s)}\Big ({H}^{(l-1)}[s]\Big) \nonumber \\
+Q^i(t)& = \text{Q-Linear}^i_{\tau (t)}\Big (H^{(l-1)}[t]\Big) \nonumber,
+\end{align}
+
+** Heterogeneous Message Passing (TODO: in detail or ignore)
+
+\begin{equation}{\bf Message}_{HGT} (s, e, t) = \underset{i \in [1,h]}{{\mathbin \Vert }} MSG\text{-}head^i (s, e, t), \end{equation}
+\begin{equation}MSG\text{-}head^i (s, e, t) = \text{M-Linear}^i _{\tau (s)} (H^{(l - 1)}
+[s])W^{(MSG)} _{\tau(e)}.\end{equation}
+
+** Target-Specific Aggregation (TODO: in detail or ignore)
+
+\begin{equation}\widetilde H^{(l)} [t] = \underset{\forall s \in N(t)} \oplus
+({\bf Attention}_{HGT} (s, e, t) \cdot {\bf Message}_{HGT} (s, e, t)), \end{equation}
+
+\begin{equation} H^{(l)} [t] = \text{A-Linear} _{\tau(t)} (\sigma(\widetilde H
+^{(l)} [t])) + H^{(l - 1)} [t].\end{equation}
+
+* References
+
+** References
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+#+print_bibliography: :heading none

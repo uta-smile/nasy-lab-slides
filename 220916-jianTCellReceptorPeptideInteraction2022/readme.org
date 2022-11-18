@@ -1,0 +1,253 @@
+#+options: ':nil *:t -:t ::t <:t H:2 \n:nil ^:{} arch:headline
+#+options: author:t broken-links:mark c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:t todo:t |:t
+#+title: T-Cell Receptor-Peptide Interaction Prediction with Physical Model Augmented Pseudo-Labeling
+#+date: <2022-09-16 Fri>
+#+author: Nasy
+#+email: nasyxx@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.0.50 (Org mode 9.5.4)
+#+cite_export: biblatex mla
+
+#+setupfile: setup.org
+
+* Introduction
+
+** TCR Peptide Interaction Prediction
+
+*** TCR Peptide Interaction                      :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.4
+:END:
+
++ The T-cell receptors (TCR) lies on the surface of the T-cell for recognition of foreign peptides.
++ Peptides are presented by major histocompatibility complex (MHC) found on the surface of tumor cells or virus-infected cells.
++ Common datasets for studying TCR-peptide interactions contain sequences of peptides and sequences of 𝛽 chain of CDR3 of TCRs.
+
+*** Illustration of T-cell receptors (TCR) and peptide binding                                       :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.4
+:END:
+
+[[./p1.png]]
+
+** Methods
+
++ Nearest neighbor (SwarmTCR [cite/ft/f:@ehrlichSwarmTCRComputationalApproach2021])
++ Distance-based minimization (TCRdist [cite/ft/f:@dashQuantifiablePredictiveFeatures2017])
++ PCA with decision tree [cite/ft/f:@tongSETESequencebasedEnsemble2020]
++ Random Forest [cite/ft/f:@gielisDetectionEnrichedCell2019a; @deneuterFeasibilityMiningCD82018]
++ Deep Learning [cite/ft/f:@luDeepLearningbasedPrediction2021; @jianTCellReceptorPeptideInteraction2022]
+
+** Datasets
+
++ Format
+   - Positive (TCR, Peptide, MHC)
+   - And lots of TCRs
++ Dataset
+   - VDJdb [cite/ft/f:@bagaevVDJdb2019Database2020]
+   - McPAS-TCR [cite/ft/f:@tickotskyMcPASTCRManuallyCurated2017]
+
+* T-Cell Receptor-Peptide Interaction Prediction with Physical Model Augmented Pseudo-Labeling
+
+** Paper
+
+#+begin_center
+\LARGE T-Cell Receptor-Peptide Interaction Prediction with Physical Model Augmented Pseudo-Labeling \normalsize [cite/ft/f:@jianTCellReceptorPeptideInteraction2022]
+#+end_center
+
+** Problem
+
+#+begin_center
+\Large Current datasets for training deep learning models of this purpose remain constrained without diverse TCRs and peptides.
+#+end_center
+
+** Solution
+
+#+begin_center
+\Large Extend training dataset
+#+end_center
+
+** Solution
+
++ Data-augmented psudo-label of TCR-peptide pairs
+   - Use teacher model to generate pseudo-labels and retrain the model with them
++ Physical modeling of TCR-peptide interaction
+   - Molecular dynamic (MD)
+   - Docking energy
+
+** What is Docking energy
+
+Docking is a computational method for predicting the structures of
+protein complex (e.g., dimer of two molecules) given the structure of
+each monomer. It searches the configuration of the complex by
+minimizing an energy scoring function.
+
+In this work, they use the final docking energy (of the optimal
+structure of the complex) between a TCR and peptide as the surrogate
+binding label for the TCR-peptide pair.
+
+** Dataset
+
++ Dataset \(\mathcal{D}\)
+  - VDJdb [cite/ft/f:@bagaevVDJdb2019Database2020]
+  - McPAS-TCR [cite/ft/f:@tickotskyMcPASTCRManuallyCurated2017]
++ Labeled (Training dataset, \(\mathcal{D}_{train}\))
+  - TCR-peptide pairs with known binding affinity (1 positive, 0 negative)
++ Unlabeled
+   - TCRdb (no peptide) with peptide from \(\mathcal{D}\).
+   - \(\mathcal{D}_{auxiliary}\)
+
+** Method
+
+There are four steps in a single training step:
+
++ Learning from labeled dataset \(\mathcal{L}_{label}\)
++ Learning from physical modeling \(\mathcal{L}_{phy}\)
++ Learning from data-augmented pseudo-labeling \(\mathcal{L}_{pseudo-label}\)
++ Look ahead meta-update
+
+*** Overview                                     :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:BEAMER_env: block
+:END:
+
+[[./p2.png]]
+
+*** ERGO                                         :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:BEAMER_env: block
+:END:
+
+[[./p3.png]]
+
+** Learning from labeled dataset \(\mathcal{L}_{label}\)
+
++ \(pred = f_{\theta}(t, p)\)
+   - \(t\) is the TCR
+   - \(p\) is the peptide
+   - The embedding of TCR and peptide from ERGO [cite/ft/f:@springerPredictionSpecificTCRPeptide2020].
+      * TCRs use LSTM or AE
+      * Peptides use LSTM
+   - \(f_{\theta}\) is the model
+      * \(f_{\theta} = MLP(concat(t, p))\)
++ \(\mathcal{L}_{label} = BCE(pred, y)\)
+
+** Learning from physical modeling \(\mathcal{L}_{phy}\)
+
++ Molecular dynamic (MD): accurate but slow
++ Docking energy: HDOCK [cite/ft/f:@yanHDOCKServerIntegrated2020a]
++ TCR/Peptide -> BLAST+ -> MSA -> MODELLER -> Structure -> Docking energy
+   - Top 25% Negative
+   - Bottom 25% Positive
++ \(pred' = f_{\theta}(t', p')\)
+   - \((t', p')$ become tuples in $\mathcal{D}_{auxiliary}\)
++ \(\mathcal{L}_{phy} = BCE(pred', y)\)
+
+** Learning from data-augmented pseudo-labeling \(\mathcal{L}_{pseudo-label}\)
+
++ \(prob = f_{teacher}(t', p')\)
++ \(pred' = f_{\theta}(t', p')\)
++ \(\mathcal{L}_{pseudo-label} = \mathtt{KL-divergence}(pred', prob)\)
+
+** Look Ahead Meta-Update
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
++ Learning from labeled dataset
+   - \(out = model(t, p)\)
+   - \(\mathcal{L}_{label} = BCE(out)\)
+   - \(model.update(\mathcal{L}_{label})\)
++ Learning from data-augmented pseudo-labeling
+   - \(out = model(t', p')\)
+   - \(out' = model_{teacher}(t', p')\)
+   - \(\mathcal{L}_{pseudo-label} = KL(out, out')\)
+   - \(model.update(\mathcal{L}_{pseudo-label})\)
+   - \(param = model.param\)
++ Learning from physical modeling
+   - \(out = model(t', p')\)
+   - \(\mathcal{L}_{phy} = BCE(out)\)
+   - \(model.update(\mathcal{L}_{phy})\)
++ Look ahead meta-update
+   - Learning Rate * 2
+   - \(\mathcal{L} = BCE(model(t, p))\)
+   - If \(\mathcal{L} > \mathcal{L}_{label}\)
+      * \(model.param = param\)
+
+** Look Ahead Meta-Update
+
+#+name: fig:pm
+#+caption: Overview of learning from data-augmented pseudolabeling. An ERGO model is first learned with TCRs and peptides sample from Dtrain, and this model is used as the teacher model. Then, this teacher model is used for pseudolabeling TCR-peptide pairs from auxiliary dataset. Finally, we re-train an ERGO model with the original dataset and the extended pseudo-labeled dataset.
+#+attr_latex: :height 5cm
+[[./pm.png]]
+
+** Results McPAS
+
+*** LSTM                                         :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.4
+:END:
+
+[[./p4.png]]
+
+*** AE                                           :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:BEAMER_env: block
+:END:
+
+[[./p5.png]]
+
+** Results VDJdb
+
+*** LSTM                                         :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.4
+:END:
+
+[[./p6.png]]
+
+*** AE                                           :BMCOL:B_block:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:BEAMER_env: block
+:END:
+
+[[./p7.png]]
+
+** Results Rare Peptides
+
++ A rare peptide KRWIILGLNK has only AUC score of 52.8,
++ while this method achieves 68.1.
++ Note that the average AUC for all peptides is 54.4.
+
+[[./p8.png]]
+
+* Conclusion
+
++ Goal: Improve the prediction of TCR-peptide interactions
++ Solution:
+   - Docking energies as the physical properties between TCR-peptide pairs
+   - Data-augmented pseudo-labeling
+   - Look ahead meta-update
+   - Experiments on VDJdb and McPAS datasets
+
+* References
+
+** References
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+#+print_bibliography: :heading none

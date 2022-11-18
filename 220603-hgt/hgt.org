@@ -1,0 +1,189 @@
+#+options: ':nil *:t -:t ::t <:t H:2 \n:nil ^:{} arch:headline
+#+options: author:t broken-links:mark c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:t todo:t |:t
+#+title: Heterogeneous Graph Transformer
+#+date: <2022-06-03 Fri>
+#+author: Ziniu Hu, Yuxiao Dong, Kuansan Wang, Yizhou Sun
+#+email: nasyxx@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.0.50 (Org mode 9.5)
+#+cite_export: biblatex
+#+bibliography: ref.bib
+
+#+setupfile: setup.org
+
+#+bibliography: ref.bib
+
+* Introduction
+
+** Introduction
+
+Heterogeneous Graph (HG) also known as heterogeneous information
+networks (HIN).
+
+A heterogeneous graph can represent as $\mathcal{G} = (\mathcal{V},
+\xi)$, where each node $\mathcal{V}$, and each edge $\xi$ has its own
+type $\Gamma_{v}$ and $\Gamma_{e}$.  A heterogeneous graph have two
+mapping function: $\phi_{v}:V\rightarrow\Gamma_{v}$ for node to node
+types, and $\phi_{e}:\xi\rightarrow\Gamma_{e}$ for edge types.
+
+[[./p1.png]]
+
+** Problem
+
++ Meta-path need domain knowledge.
++ Different types of nodes/edges share features.
++ Different types of nodes/edges keep different non-shared weights
++ Ignore the dynamic of heterogeneous graph
++ Incapable of modeling Web-scale (large) heterogeneous graph
+
+** Heterogeneous graph transformer (HGT)
+ 
++ Node and edge type dependent attention mechanism.
+  - Not parameterizing each type of edges
+  - use meta relation triplet \(e = (s, t)\), where $s$ is source
+    node, $t$ is target node
++ Relative temporal encoding (RTE) strategy for dynamic graph
++ HGSampling for Web-scale graph data.
+
+* Method
+
+** Symbols
+
++ Graph :: \(G = (\mathcal{V}, \mathcal{E}, \mathcal{A},
+  \mathcal{R})\)
++ Node :: \(v \in \mathcal{V}\), also $s,t$
++ Edge :: \(e \in \mathcal{E}\)
++ Node Type :: \(\tau(v): \mathcal{V} \rightarrow
+  \mathcal{A}\)
++ Edge Type :: \(\phi(e): \mathcal{E} \rightarrow
+  \mathcal{R}\)
++ edge, source node, target node :: \(e = (s, t)\)
++ meta relation triplet :: \(<\tau(s),\phi(e),\tau(t)>\)
+
+** Method
+
+Use the *meta-relations* fo heterogeneous graph to parameterize weight
+matrices for heterogeneous mutual attention, message passing, and
+propagation steps.
+
+Three steps:
+
++ Heterogeneous Mutual Attention
+  - input embedding of \(s_1,s_2,t\)
+  - output attention matrix of \(\phi(e)\).
++ Heterogeneous Message Passing
+  - output message of \(\phi(e)\)
++ Target-Specific Aggregation
+
+** Method
+
+[[./p2.png]]
+
+** Heterogeneous Mutual Attention
+
+GAT:
+
+#+attr_latex: :width 10cm
+[[./p3-1.png]]
+#+attr_latex: :width 10cm
+[[./p3-2.png]]
+
++ Attention :: Importance of each source node.
++ Message :: Extracts the message by using only the source node.
++ Aggregate :: Aggregate the neighborhood message by the attention weight.
+
+** Heterogeneous Mutual Attention
+
+Transformer:  \(W_q,W_k,W_v\)
+
+HGT:
+#+attr_latex: :width 10cm
+[[./p4.png]]
+
++ \(W^{ATT}_{\phi(e)}\)
++ \(\mu_{<\tau(s),\phi(e),\tau(t)>}\)
+
+** Message passing
+
+[[./p5.png]]
+
++ Edge dependent: \(W^{(MSG)} _{\tau(e)}\)
++ Incorporate the meta relations of edges into the message passing
+  process to alleviate the distribution differences of nodes and edges
+  of different types.
+
+** Target-Specific Aggregation
+
+#+attr_latex: :width 10cm
+[[./p6.png]]
+#+attr_latex: :width 10cm
+[[./p6-2.png]]
+
++ A-Linear\(_{\tau(t)}\) to map target node $t$ to type specific
+  distribution and update the \(l\)-th HGT layers embedding.
+
+** HGSampling
+
+[[./p7.png]]
+
++ keep a similar number of nodes and edges for each type, and keep the
+  sampled sub-graph dense to minimize the information loss and reduce
+  the sample variance.
+
+** Relative Temporal Encoding (RTE)
+
+#+attr_latex: :width 10cm
+[[./p8.png]]
+
+** Relative Temporal Encoding (RTE)
+
+[[./p8-2.png]]
+
++ \(\Delta T(s, t) = T(s) - T(t)\)
+
+* Experiments
+
+** OAG Data
+
+[[./p9.png]]
+
+** OAG Data
+
++ OAG
+  - All
+  - Computer Science (CS)
+  - Medicine (Med)
+
+** Baseline models
+
++ Graph Convolutional Networks (GCN)
++ Graph Attention Networks (GAT)
++ Relational Graph Convolutional Networks
+  - Keep a different weight for each relationship (edge).
+  - \(h_{i}^{(l+1)}=\sigma\left(\sum_{r \in \mathcal{R}} \sum_{j \in\mathcal{N}_{i}^{r}} \frac{1}{c_{i, r}} W_{r}^{(l)}h_{j}^{(l)}+W_{0}^{(l)} h_{i}^{(l)}\right)\)
++ Heterogeneous Graph Neural Networks
+  - Adopt different BiLSTM for node type and neighbor information
++ Heterogeneous Graph Attention Networks (HAN)
+  - Hierarchical attentions to aggregate neighbor via meta-paths
+
+** Results
+
+#+attr_latex: :height 8cm
+[[./p10.png]]
+
+* Futures
+
+** Futures
+
++ Generate heterogeneous graphs
+  - predict new papers and title
++ Pre-train HGT to benefit tasks with scarce labels
+
+---
+
++ Downstream Tasks
