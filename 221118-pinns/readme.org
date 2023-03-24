@@ -11,7 +11,7 @@
 #+select_tags: export
 #+exclude_tags: noexport
 #+creator: Emacs 29.0.50 (Org mode 9.5.5)
-#+cite_export: biblatex
+#+cite_export: bibtex oscola
 #+columns: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
 
 #+setupfile: https://raw.githubusercontent.com/uta-smile/beamer-theme/master/setup.org

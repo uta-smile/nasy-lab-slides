@@ -1,4 +1,4 @@
-% Created 2022-11-18 Fri 02:48
+% Created 2023-03-24 Fri 00:23
 % Intended LaTeX compiler: xelatex
 \documentclass[aspectratio=1610,xcolor={dvipsnames},hyperref={colorlinks,unicode,linkcolor=violet,anchorcolor=BlueViolet,citecolor=YellowOrange,filecolor=black,urlcolor=Aquamarine}]{beamer}
 \usepackage{graphicx}
@@ -59,8 +59,6 @@
  pdfsubject={},
  pdfcreator={Emacs 29.0.50 (Org mode 9.5.5)}, 
  pdflang={English}}
-\usepackage{biblatex}
-\addbibresource{~/.emacs.d/萚兮/時/refs/ref.bib}
 \begin{document}
 
 \maketitle
@@ -70,9 +68,9 @@
 
 
 \section{Introduction}
-\label{sec:org9a2c452}
+\label{sec:org7a0ad47}
 
-\begin{frame}[label={sec:org1f5d269}]{Finding the inverse function of a parabola}
+\begin{frame}[label={sec:org8c459a7}]{Finding the inverse function of a parabola}
 Given a function \(\mathcal{P}: y \rightarrow y^{2}\), where \(y \in
 [0, 1]\), find a unknow function \(f\) that satisfies
 \(\mathcal{P}(f(x)) = x,\ \forall x \in [0, 1]\).
@@ -86,7 +84,7 @@ Given a function \(\mathcal{P}: y \rightarrow y^{2}\), where \(y \in
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org606edee}]{Classical}
+\begin{frame}[label={sec:orgdd90e17}]{Classical}
 \begin{columns}
 \begin{column}{0.4\columnwidth}
 A classical approach is to use a neural network to approximate the data points \(\Omega\):
@@ -106,7 +104,7 @@ However, nowhere near the solution.
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orgaaaa784}]{Physics approach}
+\begin{frame}[label={sec:orgf972ef5}]{Physics approach}
 \begin{columns}
 \begin{column}{0.4\columnwidth}
 \[\mathcal{P}(f_{\theta}(x)) \approx y,\ \forall (x, y) \in \Omega\]
@@ -122,7 +120,7 @@ Now, minimize the error between \(f^{2}_{\theta}(x)\)  and \(y\).
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org3932c22}]{Physics Informed Neural Networks (PINNs) Definition}
+\begin{frame}[label={sec:org0b84944}]{Physics Informed Neural Networks (PINNs) Definition}
 Neural networks that are trained to solve supervised learning tasks
 while respecting any given law of physics described by general
 nonlinear partial differential equations (PDE).
@@ -133,18 +131,18 @@ nonlinear partial differential equations (PDE).
 \end{frame}
 
 \section{Partial differential equations (PDE)}
-\label{sec:orgbe4fdbf}
+\label{sec:org16c5aaf}
 
 \subsection{Introduction}
-\label{sec:orgf44bd95}
+\label{sec:orgfe3f5d8}
 
-\begin{frame}[label={sec:orga911dd7}]{What is PDE?}
+\begin{frame}[label={sec:org4d67a19}]{What is PDE?}
 \begin{itemize}
 \item Equation containing \alert{unknown functions} and \alert{its partial derivative}.
 \item Describe the relationship between independent variables, unknown functions and partial derivative.
 \end{itemize}
 
-\begin{exampleblock}{Example}
+\begin{exampleblock}{Example}\label{sec:orga121ad7}
 \begin{itemize}
 \item \(f(x, y) = ax + by + c\), where \(a, b, c\) are unknown parameters.
 \item \(u(x, y) = \alpha u(x, y) + \beta f(x, y)\) where \(u\) is the unknown function.
@@ -153,7 +151,7 @@ nonlinear partial differential equations (PDE).
 \end{exampleblock}
 \end{frame}
 
-\begin{frame}[label={sec:orgbbe65b8}]{Notations}
+\begin{frame}[label={sec:org01d28c4}]{Notations}
 \begin{itemize}
 \item \(\dot{u} = \frac{\partial{u}}{\partial{t}}\)
 \item \(u_{xy} = {\partial ^{2}u \over \partial y\,\partial x}\)
@@ -164,9 +162,9 @@ nonlinear partial differential equations (PDE).
 \end{frame}
 
 \subsection{PDE in the real world}
-\label{sec:orgf4f6c34}
+\label{sec:orga8ece5e}
 
-\begin{frame}[label={sec:orgffedd98}]{Laplace's equation}
+\begin{frame}[label={sec:org391d88d}]{Laplace's equation}
 \[\Delta \varphi = 0\]
 
 or
@@ -178,7 +176,7 @@ or, in a 3D space:
 \[\frac  {\partial ^{2}f}{\partial x^{2}}+\frac  {\partial ^{2}f}{\partial y^{2}}+\frac  {\partial ^{2}f}{\partial z^{2}} = 0\]
 \end{frame}
 
-\begin{frame}[label={sec:org5a0e218}]{Poisson's equation}
+\begin{frame}[label={sec:org4c57d1c}]{Poisson's equation}
 \[\Delta \varphi = f\]
 
 \begin{center}
@@ -186,19 +184,19 @@ or, in a 3D space:
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org7e633e9}]{Heat equation}
+\begin{frame}[label={sec:orgfe4b3a3}]{Heat equation}
 \[\dot{u} = \frac  {\partial u}{\partial t} = \alpha \Delta u\]
 
 where \(\alpha\) is the thermal diffusivity.
 \end{frame}
 
-\begin{frame}[label={sec:org77a7ad2}]{Wave equation}
+\begin{frame}[label={sec:orgb6db810}]{Wave equation}
 \[\ddot {u}=c^{2}\nabla ^{2}u\]
 
 where \(c\) is the wave speed.
 \end{frame}
 
-\begin{frame}[label={sec:orgea36be1}]{Burgers' equation}
+\begin{frame}[label={sec:org21893a0}]{Burgers' equation}
 \[u_t + u u_x = \nu u_{xx}\]
 
 \begin{description}
@@ -210,9 +208,9 @@ where \(c\) is the wave speed.
 \end{frame}
 
 \subsection{Boundary conditions}
-\label{sec:orge0d99c3}
+\label{sec:org242e28d}
 
-\begin{frame}[label={sec:orgf5d6374}]{Boundary conditions}
+\begin{frame}[label={sec:orgdc8fb60}]{Boundary conditions}
 For a equation \(\nabla^{2}y+y=0\) in domain \(\Omega\).
 
 \begin{itemize}
@@ -231,16 +229,16 @@ For a equation \(\nabla^{2}y+y=0\) in domain \(\Omega\).
 \end{frame}
 
 \section{PINNs}
-\label{sec:org5f0dd64}
+\label{sec:org493dbd1}
 
-\begin{frame}[label={sec:orgc272d9c}]{Paper}
+\begin{frame}[label={sec:org91e1858}]{Paper}
 \begin{itemize}
-\item Physics Informed Deep Learning (Part I): Data-driven Solutions of Nonlinear Partial Differential Equations\footfullcite{raissiPhysicsInformedDeep2017}
-\item Physics Informed Deep Learning (Part II): Data-driven Discovery of Nonlinear Partial Differential Equations\footfullcite{raissiPhysicsInformedDeep2017a}
+\item Physics Informed Deep Learning (Part I): Data-driven Solutions of Nonlinear Partial Differential Equations\cite{raissiPhysicsInformedDeep2017}
+\item Physics Informed Deep Learning (Part II): Data-driven Discovery of Nonlinear Partial Differential Equations\cite{raissiPhysicsInformedDeep2017a}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org86c56b7}]{Problem}
+\begin{frame}[label={sec:orgac712d9}]{Problem}
 \begin{itemize}
 \item Data-driven solution and data-driven discovery
 \item Continuous time and discrete time models
@@ -248,9 +246,9 @@ For a equation \(\nabla^{2}y+y=0\) in domain \(\Omega\).
 \end{frame}
 
 \subsection{Data-driven solution with continuous time}
-\label{sec:orgdbaaf29}
+\label{sec:org3c1b7dc}
 
-\begin{frame}[label={sec:orgd383ca6}]{Data-driven solution with continuous time}
+\begin{frame}[label={sec:org672ff1b}]{Data-driven solution with continuous time}
 General PDE Form:
 
 \[u_t + \mathcal{N}[u] = 0,\ x \in \Omega, \ t\in[0,T]\]
@@ -264,7 +262,7 @@ where:
 \end{description}
 \end{frame}
 
-\begin{frame}[label={sec:orgcbc9f8f}]{Physics informed neural network}
+\begin{frame}[label={sec:orgde2178e}]{Physics informed neural network}
 \begin{itemize}
 \item A neural network \(u_{\theta} \approx u\), where \(\theta\) is the parameters of the neural network.
 \item A \alert{physics informed neural network} \(f_{\theta} = {u_{\theta}}_{t} + \mathcal{N}[u_{\theta}]\).
@@ -279,7 +277,7 @@ where:
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org4b2172b}]{Example (Burgers' Equation)}
+\begin{frame}[label={sec:org0a1c8d9}]{Example (Burgers' Equation)}
 The equation:
 
 \[u_t + u u_x = \nu u_{xx}\]
@@ -298,7 +296,7 @@ And the equation along with Dirichlet boundary conditions can be written as:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd29dc6d}]{Target}
+\begin{frame}[label={sec:org444c4dc}]{Target}
 \begin{itemize}
 \item Data:
 \begin{itemize}
@@ -313,7 +311,7 @@ And the equation along with Dirichlet boundary conditions can be written as:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgc29be21},fragile,containsverbatim]{Example (Burgers' Equation) with codes}
+\begin{frame}[label={sec:org1d3afdf},fragile,containsverbatim]{Example (Burgers' Equation) with codes}
  \begin{minted}[]{python}
 def u_theta(theta, t, x):
     # u_theta.apply(theta, t, x) to approx u(x, t)
@@ -332,7 +330,7 @@ def f_theta(theta, t, x):
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org4a257a1}]{Train and Results}
+\begin{frame}[label={sec:orgd2c9a64}]{Train and Results}
 \begin{itemize}
 \item Train with MLPs with L-BFGS solver (quasi-newton method).
 \item Cannot use ReLU but tanh, because when we do the second order derivative, the ReLU will be 0.
@@ -344,9 +342,9 @@ def f_theta(theta, t, x):
 \end{frame}
 
 \subsection{Data-driven discovery with continuous time}
-\label{sec:org81b5918}
+\label{sec:org9698a8a}
 
-\begin{frame}[label={sec:org9ac7717}]{Data-driven discovery with continuous time}
+\begin{frame}[label={sec:org7b92568}]{Data-driven discovery with continuous time}
 General PDE Form:
 
 \[u_t + \mathcal{N}[u;\lambda] = 0,\ x \in \Omega, \ t\in[0,T]\]
@@ -389,13 +387,13 @@ Additional physical constraints:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org61a3fcd}]{NS Equation figure}
+\begin{frame}[label={sec:org5ffd44c}]{NS Equation figure}
 \begin{center}
 \includegraphics[height=7cm]{./p8.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org8c3953f}]{Example (Navier-Stokes Equation) -- Target}
+\begin{frame}[label={sec:org5b07541}]{Example (Navier-Stokes Equation) -- Target}
 \begin{itemize}
 \item The neural network equations:
 \begin{itemize}
@@ -414,23 +412,23 @@ Additional physical constraints:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org24e4e26}]{Results}
+\begin{frame}[label={sec:org5c27c39}]{Results}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./p9.png}
 \end{center}
 \end{frame}
 
 \section{JAX}
-\label{sec:org9898778}
+\label{sec:org207db80}
 
-\begin{frame}[label={sec:orgb2cd3e4}]{Introduction}
+\begin{frame}[label={sec:org08699cc}]{Introduction}
 JAX is Autograd and XLA, brought together for high-performance
 numerical computing and machine learning research. It provides
 composable transformations of Python+NumPy programs: differentiate,
 vectorize, parallelize, Just-In-Time compile to GPU/TPU, and more.
 \end{frame}
 
-\begin{frame}[label={sec:org110f7b0},fragile]{Pure functional}
+\begin{frame}[label={sec:orgb43aadd},fragile]{Pure functional}
  \begin{itemize}
 \item \(f(x) = y\), always.
 \item non-pure function:
@@ -443,7 +441,7 @@ vectorize, parallelize, Just-In-Time compile to GPU/TPU, and more.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org0177242},fragile]{Ecosystem}
+\begin{frame}[label={sec:orgcbd9332},fragile]{Ecosystem}
  \begin{itemize}
 \item JAX (jax, jaxlib)
 \begin{itemize}
@@ -478,7 +476,7 @@ vectorize, parallelize, Just-In-Time compile to GPU/TPU, and more.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3a45c15},fragile,containsverbatim]{Example (def)}
+\begin{frame}[label={sec:org7b2516c},fragile,containsverbatim]{Example (def)}
  \begin{minted}[]{python}
 import jax
 import jax.numpy as jnp
@@ -491,7 +489,7 @@ u = hk.transform_with_state(_u)
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orga431a8a},fragile,containsverbatim]{Example (init)}
+\begin{frame}[label={sec:org787ce60},fragile,containsverbatim]{Example (init)}
  \begin{minted}[]{python}
 fake_t = jnp.ones([batch, size])
 fake_x = jnp.ones([batch, size])
@@ -505,7 +503,7 @@ hk.experimental.tabulate(u)(fake_t, fake_x)
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org8353a74},fragile,containsverbatim]{Example (loss)}
+\begin{frame}[label={sec:org536c290},fragile,containsverbatim]{Example (loss)}
  \begin{minted}[]{python}
 def loss_fn(config, ...):
 
@@ -521,7 +519,7 @@ loss = loss_fn(config, ...)
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org0956445},fragile,containsverbatim]{Example (optim)}
+\begin{frame}[label={sec:orgfadc2c6},fragile,containsverbatim]{Example (optim)}
  \begin{minted}[]{python}
 import optax
 
@@ -537,7 +535,7 @@ opt = optax.adamax(learning_rate=lr)
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org2707e04},fragile,containsverbatim]{Example (solver)}
+\begin{frame}[label={sec:org6984ed2},fragile,containsverbatim]{Example (solver)}
  \begin{minted}[]{python}
 import jaxopt
 
@@ -561,7 +559,7 @@ update = solver.update
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:orgd753f00},fragile]{Example (train)}
+\begin{frame}[label={sec:org86d3bb6},fragile]{Example (train)}
  \begin{minted}[]{python}
 # init
 params, state, opt_state, update
@@ -572,7 +570,7 @@ for batch in data:
 \end{minted}
 \end{frame}
 
-\begin{frame}[label={sec:org108c2c5},fragile]{Example (parallel)}
+\begin{frame}[label={sec:org3084c38},fragile]{Example (parallel)}
  \begin{minted}[]{python}
 # Use pjit
 from jax.experimental.maps import Mesh, ResourceEnv, thread_resources
@@ -594,9 +592,9 @@ update = pjit(
 \end{frame}
 
 \section{Conclusion}
-\label{sec:org36ea8d6}
+\label{sec:org21faefe}
 
-\begin{frame}[label={sec:org9fff3cc}]{Conclusion}
+\begin{frame}[label={sec:orgb0d717a}]{Conclusion}
 \begin{itemize}
 \item Find an inverse function of a parabola
 \begin{itemize}
@@ -623,9 +621,10 @@ update = pjit(
 \end{frame}
 
 \section{Refs}
-\label{sec:orgee4b77e}
+\label{sec:org93842f9}
 
 \begin{frame}[allowframebreaks]{Refs}
-\printbibliography
+\bibliographystyle{oscola}
+\bibliography{~/.emacs.d/萚兮/時/refs/ref}
 \end{frame}
 \end{document}
