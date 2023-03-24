@@ -1,0 +1,166 @@
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:{} arch:headline
+#+options: author:t broken-links:mark c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:t todo:t |:t
+#+title: Tuning
+#+date: <2023-03-24 Fri>
+#+author: Nasy
+#+email: nasyxx@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.0.50 (Org mode 9.5.5)
+#+cite_export: biblatex
+#+columns: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+
+#+setupfile: https://raw.githubusercontent.com/uta-smile/beamer-theme/master/setup.org
+
+#+latex_header_extra: \usepackage{minted}
+
+* Introduction
+
+*** Introduction
+
++ Target: :: Maximizing the performance of the model.
++ Question? :: How to get good results with deep learning?
++ Why? :: My model does not work!!!
+
+[[./p1.png]]
+
+* Get Start
+
+*** Get Start
+
++ Model Architecture
++ Optimizer
++ Batch Size
++ Hyperparameters
+  - Initial Learning rate, momentum, weight decay, etc.
++ ref [cite/ft/f:@DeepLearningTuning2023]
+
+*** Model Architecture
+
+
++ \large Try to reuse the existing models that already work.
+
++ Not only the model layers, but also the hyperparameters settings.
+
+*** Optimizer
+
+No optimizer is the "best" across all types of machine learning problems and model architectures. [cite/ft/f:@choiEmpiricalComparisonsOptimizers2020]
+
+[[./p2.png]]
+
+*** Batch Size
+
++ Only affects the speed of training.
++ The batch size should not be treated as a tunable hyperparameter. [cite/ft/f:@shallueMeasuringEffectsData2019]
++ In most case, batch size should be the largest batch size supported by the available hardware.
++ Do not change during tuning.
+  - Some layers, like the Batchnorm, will be affected.
+
+*** Initial Hyperparameters
+
+**** Before                                               :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+
+Before we start tuning hyperparameters:
+
++ Model ready (e.g. num of layers).
++ Max traning steps
++ Pipeline ready (e.g. preprocessing, evaluation.)
+
+**** In                                                   :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+
+Select the initial hyperparameters:
+
++ Learning rate (start from fix instead of schedule)
++ Optimizer parameters
+  - Adam: lr, beta1, beta2, weight_decay
+  + SGD: lr, momentum, weight_decay
++ Layers parameters
+  - Batchnorm: momentum, epsilon
+  - Dropout: rate
+  - Conv2D: kernel_size, strides, padding, activation
+  - Dense: activation, output features
+  + leaky_relu: alpha
++ Search spaces
+
+* Tuning
+
+*** Hyperparameters
+
++ Scientific hyperparameters :: For ablation study. (e.g. num of GCN layers)
++ Nuisance hyperparameters :: Optimized for fair comparison for scientific hyperparameters.  (e.g. optimizer parameters)
++ Fixed hyperparameters :: No need to change when comparing scientific hyperparameters. (e.g. batch size)
+
+*** Strategies
+
++ Grid search
+  - Small search spaces
++ Random search
+  - Explore the search space
++ Quasi-random search
+  -  Explore the search space (like the boundary of search space)
++ Bayesian optimization
+  - Exploit the correlation between hyperparameters.
+  - TPE
+  - Gaussian process
+  - ...
+
+*** Tuning Tools
+
++ Optuna :: https://github.com/optuna/optuna
++ NNI :: https://github.com/microsoft/nni
++ Vizier :: https://github.com/google/vizier
++ hyperopt (outdated) :: https://github.com/hyperopt/hyperopt.git
++ advisor (outdated) :: https://github.com/tobegit3hub/advisor.git
+
+* Bayesian Optimization
+
+*** Bayesian Optimization
+
+We have a set of hyperparameters $X=x_{1}, x_{2},...,x_{n}$, and we want to find the best one for function \(f: x \rightarrow R\), where \(x \in X\):
+
+\[x^* = \arg \max_{x \in X} f(x)\]
+
+*** Algorithm
+
++ Input :: \(f\), \(X\), \(S\), \(M\)
++ f :: The blackbox function we want to optimize.
++ X :: The hyperparameters we want to tune.
++ S :: Acquisition function
++ M :: Model of BO.  ( Gaussian process; TPE; Random forest; ... )
+
+#+begin_src python
+  def algorithm(f, X, S, M):
+      D = init_samples()  # initial x and y = f(x)
+      for i in range(100):
+          p = M.fit(D)  # p(y|x, D)
+          new_x = S(X, p)
+          new_y = f(new_x)
+          D.append((new_x, new_y))
+#+end_src
+
+*** Acquisition Function
+
++ An inexpensive function that can be evaluated at a given point that is commensurate with how desirable evaluating f at x is expected to be for the problem
++ Probability of improvement
++ Expected improvement
++ Entropy search
++ Gaussian Process-Upper Confidence Bound
+
+* Refs
+
+*** Refs
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+#+print_bibliography:
