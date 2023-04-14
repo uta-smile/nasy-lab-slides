@@ -1,0 +1,599 @@
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:{} arch:headline
+#+options: author:t broken-links:mark c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:1 todo:t |:t
+#+title: In-Context Learning -- Human-Computer Interface
+#+date: <2023-03-24 Fri>
+#+author: Nasy
+#+email: nasyxx@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.0.50 (Org mode 9.5.5)
+#+cite_export: biblatex
+#+columns: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+
+#+setupfile: https://raw.githubusercontent.com/uta-smile/beamer-theme/master/setup.org
+
+#+latex_header_extra: \usepackage{minted}
+#+latex_header_extra: \setbeamerfont{caption}{size=\scriptsize}
+#+latex_header: \AtBeginSubsection[]{\begin{frame}<beamer>\frametitle{Section}\tableofcontents[currentsection,currentsubsection]\end{frame}}
+#+latex_header: \synctex=1
+
+#+latex: \setcounter{tocdepth}{2}
+
+* Introduction
+
+*** Example -- Transfrom a table to a review sentiment template
+
+Table:
+
+| Text              | Label |
+|-------------------+-------|
+| Delicious food    |     1 |
+| The food is awful |     0 |
+| Terrible dishes   |     0 |
+
+Template: Review: [text] Sentiment: [label]
+
+    #+begin_src
+[ME]:
+Review: Delicious food      Sentiment: Positive
+Review: The food is awful   Sentiment: Negative
+Review: Terrible dishes     Sentiment: Negative
+Review: Good meal           Sentiment:
+[AI]: Positive
+  #+end_src
+
+*** Example -- Emoji
+
+#+name: fig:ex1
+#+caption: Emoji English translation.
+[[./pex1.png]]
+
+*** Example -- Graph
+
+See org file
+
+#+begin_src org  :exports none
+[ME]:
+Alice is Bob’s roommate. Make her node green.
+[
+["Alice", "is roommate", "Bob"],
+["Alice", "#00FF00"]
+]
+
+Over-fitting and over-smoothing are two main obstacles of developing deep Graph Convolutional Networks (GCNs) for node classification.
+In particular, over-fitting weakens the generalization ability on small dataset,
+while over-smoothing impedes model training by isolating output representations from the input features with the increase in network depth.
+[
+["Over-fitting", "obstacle", "GCNs"],
+["Over-smoothing", "obstacle", "GCNs"],
+["GCNs", "purpose", "node classification"],
+["Over-fitting", "effect", "weakens generalization ability on small dataset"],
+["Over-smoothing", "effect", "impedes model training"],
+["Over-smoothing", "result", "isolates output representations from input features"],
+["Network depth", "increase", "contributes to over-smoothing"]
+]
+
+This paper proposes DropEdge, a novel and flexible technique to alleviate both issues.
+At its core, DropEdge randomly removes a certain number of edges from the input graph at each training epoch,
+acting like a data augmenter and also a message passing reducer.
+Furthermore, we theoretically demonstrate that DropEdge either reduces the convergence speed of over-smoothing or relieves the information loss caused by it.
+More importantly, our DropEdge is a general skill that can be equipped with many other backbone models
+(e.g.  GCN, ResGCN, GraphSAGE, and JKNet) for enhanced performance.
+Extensive experiments on several benchmarks verify that DropEdge consistently improves
+the performance on a variety of both shallow and deep GCNs.
+The effect of DropEdge on preventing over-smoothing is empirically visualized and validated as well.
+Codes are released on https://github.com/DropEdge/DropEdge
+
+
+[AI]: [
+["DropEdge", "proposition", "novel and flexible technique to alleviate over-fitting and over-smoothing in GCNs"],
+["Data augmenter", "function", "randomly removes a certain number of edges from input graph"],
+["Message passing reducer", "function", "reduces message passing in GCNs"],
+["Theoretical demonstration", "result", "DropEdge reduces the convergence speed of over-smoothing or relieves information loss"],
+["DropEdge", "skill", "general technique that can enhance performance of other backbone models"],
+["GCN, ResGCN, GraphSAGE, and JKNet", "examples of backbone models"],
+["Experiments", "method", "evaluate performance of DropEdge on benchmarks"],
+["DropEdge", "effect", "consistently improves performance on both shallow and deep GCNs"],
+["Visual validation", "method", "verifies effect of DropEdge on preventing over-smoothing"],
+["Code release", "location", "https://github.com/DropEdge/DropEdge"]
+]
+#+end_src
+
+* In-Context Learning
+
+** Definition
+
+*** Definition
+
++ Input ::  A demonstration set \(C = \{<x_{i}, y_{i}> | i \in [1, n]\}\), and the next \(x_{n+1}\)
++ Output :: \(y_{n+1}\)
+
+\[P( y_{j} | x ) = f_{M}(y_{i}, x_{i}, C), i \in [1, n] \]
+\[ y_{n + 1} = \operatorname*{arg\,max}_{y_{j}} P(y_{j}|x) \]
+
+*** Difference between ICL and others
+
+|                      | Model    | Task description | Examples |
+|----------------------+----------+------------------+----------|
+| Fine-tune            | Update   | Yes              | Yes      |
+| Few-shot             | Original | Yes              | Yes      |
+| Zero-shot (Instruct) | Original | Yes              | No       |
+| In-Context Learning  | Original | No               | Yes      |
+
+#+latex: {\tiny
+
+#+begin_src
+[ME]:
+### Transform sentence to triplets.  // Task description (Instruct)
+
+### E.g.
+Alice is Bob’s roommate. Make her node green.
+[
+["Alice", "is roommate", "Bob"],
+["Alice", "#00FF00"]
+]
+
+### Input
+Over-fitting and over-smoothing are two main obstacles of developing deep Graph Convolutional Networks (GCNs) for node classification.
+
+[AI]: [
+["over-fitting", "are obstacles of", "developing deep Graph Convolutional Networks for node classification"],
+["over-smoothing", "are obstacles of", "developing deep Graph Convolutional Networks for node classification"]
+]
+#+end_src
+
+#+latex: }
+
+** Taxonomy
+
+*** Taxonomy of in-context learning.
+
+ICL Paper list: https://github.com/dqxiu/ICL_PaperList
+
+#+name: fig:1
+#+caption: Taxonomy of in-context learning [cite/ft/f:@dongSurveyIncontextLearning2023].
+[[./p1.png]]
+
+*** Large Language Models Are Human-Level Prompt Engineers
+
+\tiny If we assume that In-Context Learning is the use of examples to concretely express task commands, and Instruct is a more abstract task description that is better suited to human habits, then a very natural question is: what is the connection between them?
+
+#+name: fig:9
+#+caption: \tiny Automatic Prompt Engineer (APE) workflow [cite/ft/f:@zhouLargeLanguageModels2023]. Demo: https://sites.google.com/view/automatic-prompt-engineer
+#+attr_latex: :height 6cm
+[[./p9.png]]
+
+** Training
+
+*** Training
+
+During training, split the raw text into ICL examples.  As the data size increases, the effect gradually flattens out, but increasing task diversity can further enhance performance.
+
+#+name: fig:2
+#+caption: Each example is an input-output pair constructed from the raw text. [cite/ft/f:@chenImprovingInContextFewShot2022]
+[[./p2.png]]
+
+** Inference
+
+*** Inference -- Demonstration Designing
+
++ Demostration Organization
+  - Selection
+  - Order
++ Demostration Formatting
+  - Instruction
+  - Reasoning Steps
+
+*** Selection and Order
+
++ Target :: Which examples are good examples for ICL?
+
+**** Selection                                            :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+
++ Unsupervised Method
+  - L2 distance
+  - Cosine similarity
+  - ...
+  - LLM
++ Supervised Method
+  - Human Feedback Reinforcement Learning
+  - ...
+
+**** Order                                                :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+
++ Put the most similar examples last.
++ Order by entropy metrics [cite/ft/f:@luFantasticallyOrderedPrompts2022]
+
+*** Formatting
+
++ Instruction
+  - Finetuned Language Models are Zero-Shot Learners (FLAN) [cite/ft/f:@weiFinetunedLanguageModels2022]
++ Reasoning Steps
+  - CoT (Chain of Thought) [cite/ft/f:@weiChainofThoughtPromptingElicits2022]
+  - Self-consistency [cite/ft/f:@wangSelfConsistencyImprovesChain2023]
+  - Least-to-most prompting [cite/ft/f:@zhouLeasttoMostPromptingEnables2023]
+  - Lets think step by step (Zero-Shot-CoT) [cite/ft/f:@kojimaLargeLanguageModels2023]
+
+*** FLAN [cite/ft/f:@weiFinetunedLanguageModels2022]
+
+#+name: fig:6
+#+caption: Instruction tuning finetunes a pretrained language model on a mixture of tasks phrased as instructions.
+#+attr_latex: :height 6cm
+[[./p6.png]]
+
+*** CoT [cite/ft/f:@weiChainofThoughtPromptingElicits2022].
+
+#+name: fig:3
+#+caption: \tiny Chain-of-thought prompting enables large language models to tackle complex arithmetic, commonsense, and symbolic reasoning tasks.  Chain-of-thought reasoning processes are highlighted.
+#+attr_latex: :height 6.2cm
+[[./p3.png]]
+
+*** Self Consistency [cite/ft/f:@wangSelfConsistencyImprovesChain2023]
+
+#+name: fig:7
+#+caption: \tiny The self-consistency method contains three steps: (1) prompt a language model using chain-of-thought (CoT) prompting; (2) replace the “greedy decode” in CoT prompting by sampling from the language model’s decoder to generate a diverse set of reasoning paths; and (3) marginalize out the reasoning paths and aggregate by choosing the most consistent answer in the final answer set.
+#+attr_latex: :height 6.2cm
+[[./p7.png]]
+
+*** Least-to-most prompting [cite/ft/f:@zhouLeasttoMostPromptingEnables2023]
+
+#+name: fig:8
+#+caption: \tiny Least-to-most prompting solving a math word problem in two stages: (1) query the language model to decompose the problem into subproblems; (2) query the language model to sequentially solve the subproblems. The answer to the second subproblem is built on the answer to the first subproblem. The demonstration examples for each stage’s prompt are omitted in this illustration.
+#+attr_latex: :height 6cm
+[[./p8.png]]
+
+*** Lets Think Step by Step (Zero-Shot-CoT) [cite/ft/f:@kojimaLargeLanguageModels2023]
+
+#+name: fig:4
+#+caption: Lets think step by step.
+[[./p4.png]]
+
+*** Results
+
+#+name: fig:10
+#+caption: Accuracy comparison of Zero-shot-CoT with Zero-shot on each tasks. The values on the left side of each task are the results of using answer extraction prompts depending on answer format.  The values on the right side are the result of additional experiment where standard answer prompt "The answer is" is used for answer extraction
+[[./p10.png]]
+
+*** Inference -- Scoring Function
+
+Channel Model [cite/ft/f:@minNoisyChannelLanguage2022]
+
+#+name: fig:5
+#+caption: Channel model.
+[[./p5.png]]
+
+* Does ICL really learn something?
+
+*** No
+
++ In /Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?/ [cite/ft/f:@minRethinkingRoleDemonstrations2022], the authors show that ICL is not learning anything.
++ They use a random label \(y_{r} \in Y\) to replace the true label \(y_{i}\) for \(x_{i}\), and the model still works.
++ What really affects is the distribution of \(<x_{i}, y_{i}>\).
+
+#+begin_src
+[ME]:
+Review: Delicious food      Sentiment: Negative
+Review: The food is awful   Sentiment: Positive
+Review: Terrible dishes     Sentiment: Negative
+Review: Good meal           Sentiment:
+
+[AI]: Positive
+#+end_src
+
+*** Yes
+
++ Ekin Akyurek [cite/ft/f:@akyurekWhatLearningAlgorithm2023]
+  - Transformer-based in-context learners implement standard learning algorithms implicitly, by encoding smaller models in their activations, and updating these implicit models as new examples appear in the context.
++ Damai Dai [cite/ft/f:@daiWhyCanGPT2022]
+  - Language models is meta-optimizers and understands ICL is a kind of implicit finetuning.
+
+* Conclusion
+
+*** Conclusion
+
++ In-context learnig (ICL) difinition
++ Taxonomy of ICL
++ Relation between ICL and instruct
++ ICL in Training
++ ICL in Inference
+  - Demonstration Designing
+    * Selection and Order
+    - Formatting
+  - Scoring Function
+
+* Reference
+
+*** Reference
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+#+print_bibliography:
+
+* Examples
+
+*** Example
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+Over-fitting and over-smoothing are two main obstacles of developing deep Graph Convolutional Networks (GCNs) for node classification. In particular, over-fitting weakens the generalization ability on small dataset, while over-smoothing impedes model training by isolating output representations from the input features with the increase in network depth.  This paper proposes DropEdge, a novel and flexible technique to alleviate both issues. At its core, DropEdge randomly removes a certain number of edges from the input graph at each training epoch, acting like a data augmenter and also a message passing reducer. Furthermore, we theoretically demonstrate that DropEdge either reduces the convergence speed of over-smoothing or relieves the information loss caused by it. More importantly, our DropEdge is a general skill that can be equipped with many other backbone models (e.g.  GCN, ResGCN, GraphSAGE, and JKNet) for enhanced performance.  Extensive experiments on several benchmarks verify that DropEdge consistently improves the performance on a variety of both shallow and deep GCNs.  The effect of DropEdge on preventing over-smoothing is empirically visualized and validated as well.  Codes are released on https://github.com/DropEdge/DropEdge
+
+
+#+begin_src
+[ME]:
+Alice is Bob’s roommate. Make her node green.
+[
+["Alice", "is roommate", "Bob"],
+["Alice", "#00FF00"]
+]
+
+In this paper, we question if self-supervised learning provides new properties to Vision Transformer (ViT) [19] that stand out compared to convolutional networks (convnets).  Beyond the fact that adapting self-supervised methods to this architecture works particularly well, we make the following observations: first, self-supervised ViT features contain explicit information about the semantic segmentation of an image, which does not emerge as clearly with supervised ViTs, nor with convnets. Second, these features are also excellent k-NN classifiers, reaching 78.3% top-1 on ImageNet with a small ViT. Our study also underlines the importance of momentum encoder [33], multi-crop training [10], and the use of small patches with ViTs. We implement our findings into a simple self-supervised method, called DINO, which we interpret as a form of self-distillation with no labels.  We show the synergy between DINO and ViTs by achieving 80.1% top-1 on ImageNet in linear evaluation with ViT-Base.
+[
+["Paper", "focus", "self-supervised learning properties of ViT"],
+["ViT", "compared to", "convnets"],
+["Self-supervised ViT", "observation", "contains explicit information about semantic segmentation"],
+["Self-supervised ViT", "observation", "excellent k-NN classifiers"],
+["Self-supervised ViT", "performance", "78.3% top-1 on ImageNet with a small ViT"],
+["Momentum encoder", "importance", "self-supervised learning"],
+["Multi-crop training", "importance", "self-supervised learning"],
+["Small patches", "importance", "self-supervised learning with ViTs"],
+["DINO", "implemented", "self-supervised method"],
+["DINO", "interpretation", "self-distillation with no labels"],
+["DINO", "synergy", "ViTs"],
+["DINO and ViT-Base", "performance", "80.1% top-1 on ImageNet in linear evaluation"]
+]
+
+Over-fitting and over-smoothing are two main obstacles of developing deep Graph Convolutional Networks (GCNs) for node classification. In particular, over-fitting weakens the generalization ability on small dataset, while over-smoothing impedes model training by isolating output representations from the input features with the increase in network depth.  This paper proposes DropEdge, a novel and flexible technique to alleviate both issues. At its core, DropEdge randomly removes a certain number of edges from the input graph at each training epoch, acting like a data augmenter and also a message passing reducer. Furthermore, we theoretically demonstrate that DropEdge either reduces the convergence speed of over-smoothing or relieves the information loss caused by it. More importantly, our DropEdge is a general skill that can be equipped with many other backbone models (e.g.  GCN, ResGCN, GraphSAGE, and JKNet) for enhanced performance.  Extensive experiments on several benchmarks verify that DropEdge consistently improves the performance on a variety of both shallow and deep GCNs.  The effect of DropEdge on preventing over-smoothing is empirically visualized and validated as well.  Codes are released on https://github.com/DropEdge/DropEdge
+[
+["Over-fitting", "obstacle", "GCNs"],
+["Over-smoothing", "obstacle", "GCNs"],
+["GCNs", "purpose", "node classification"],
+["DropEdge", "proposed for", "alleviating over-fitting and over-smoothing"],
+["DropEdge", "function", "randomly removes edges"],
+["DropEdge", "acts as", "data augmenter"],
+["DropEdge", "acts as", "message passing reducer"],
+["DropEdge", "effect", "reduces convergence speed of over-smoothing or relieves information loss"],
+["DropEdge", "applicable to", "GCN"],
+["DropEdge", "applicable to", "ResGCN"],
+["DropEdge", "applicable to", "GraphSAGE"],
+["DropEdge", "applicable to", "JKNet"],
+["Experiments", "validate", "DropEdge"],
+["DropEdge", "prevents", "over-smoothing"],
+["Codes", "available at", "https://github.com/DropEdge/DropEdge"]
+]
+
+Pretrained large language models (LLMs) are widely used in many sub-fields of natural language processing (NLP) and generally known as excellent few-shot learners with task-specific exemplars. Notably, chain of thought (CoT) prompting, a recent technique for eliciting complex multi-step reasoning through step-bystep answer examples, achieved the state-of-the-art performances in arithmetics and symbolic reasoning, difficult system-2 tasks that do not follow the standard scaling laws for LLMs. While these successes are often attributed to LLMs’ ability for few-shot learning, we show that LLMs are decent zero-shot reasoners by simply adding “Let’s think step by step” before each answer. Experimental results demonstrate that our Zero-shot-CoT, using the same single prompt template, significantly outperforms zero-shot LLM performances on diverse benchmark reasoning tasks including arithmetics (MultiArith, GSM8K, AQUA-RAT, SVAMP), symbolic reasoning (Last Letter, Coin Flip), and other logical reasoning tasks (Date Understanding, Tracking Shuffled Objects), without any hand-crafted few-shot examples, e.g. increasing the accuracy on MultiArith from 17.7% to 78.7% and GSM8K from 10.4% to 40.7% with large-scale InstructGPT model (text-davinci002), as well as similar magnitudes of improvements with another off-the-shelf large model, 540B parameter PaLM. The versatility of this single prompt across very diverse reasoning tasks hints at untapped and understudied fundamental zero-shot capabilities of LLMs, suggesting high-level, multi-task broad cognitive capabilities may be extracted by simple prompting. We hope our work not only serves as the minimal strongest zero-shot baseline for the challenging reasoning benchmarks, but also highlights the importance of carefully exploring and analyzing the enormous zero-shot knowledge hidden inside LLMs before crafting finetuning datasets or few-shot exemplars.
+
+[AI]: [
+["Pretrained large language models", "widely used in", "many sub-fields of NLP"],
+["LLMs", "known for", "excellent few-shot learning"],
+["Chain of thought (CoT)", "a recent technique for", "eliciting complex multi-step reasoning"],
+["CoT prompting", "achieved", "state-of-the-art performances in arithmetics and symbolic reasoning"],
+["CoT prompting", "successes attributed to", "LLMs ability for few-shot learning"],
+["Zero-shot-CoT", "outperforms", "zero-shot LLM performances on diverse benchmark reasoning tasks"],
+["Zero-shot-CoT", "uses", "same single prompt template"],
+["Zero-shot-CoT", "increases accuracy on MultiArith from 17.7% to 78.7% and GSM8K from 10.4% to 40.7% with large-scale InstructGPT model (text-davinci002)"],
+["Zero-shot-CoT", "similar magnitudes of improvements", "with another off-the-shelf large model, 540B parameter PaLM"],
+["Single prompt", "versatile across", "diverse reasoning tasks"],
+["Zero-shot capabilities", "hidden inside LLMs", "untapped and understudied fundamental"],
+["Zero-shot capabilities", "suggests high-level, multi-task broad cognitive capabilities", "may be extracted by simple prompting"],
+["Importance", "carefully exploring and analyzing the enormous zero-shot knowledge", "hidden inside LLMs"],
+["Hope", "work serves as", "minimal strongest zero-shot baseline for the challenging reasoning benchmarks"],
+["Hope", "work highlights", "importance of exploring and analyzing the enormous zero-shot knowledge hidden inside LLMs"]
+]
+
+[ME]:
+#+end_src
+
+
+#+begin_ai
+[ME]:
+["Pretrained large language models", "widely used in", "many sub-fields of NLP"],
+["LLMs", "known for", "excellent few-shot learning"],
+["Chain of thought (CoT)", "a recent technique for", "eliciting complex multi-step reasoning"],
+["CoT prompting", "achieved", "state-of-the-art performances in arithmetics and symbolic reasoning"],
+["CoT prompting", "successes attributed to", "LLMs ability for few-shot learning"],
+["Zero-shot-CoT", "outperforms", "zero-shot LLM performances on diverse benchmark reasoning tasks"],
+["Zero-shot-CoT", "uses", "same single prompt template"],
+["Zero-shot-CoT", "increases accuracy on MultiArith from 17.7% to 78.7% and GSM8K from 10.4% to 40.7% with large-scale InstructGPT model (text-davinci002)"],
+["Zero-shot-CoT", "similar magnitudes of improvements", "with another off-the-shelf large model, 540B parameter PaLM"],
+["Single prompt", "versatile across", "diverse reasoning tasks"],
+["Zero-shot capabilities", "hidden inside LLMs", "untapped and understudied fundamental"],
+["Zero-shot capabilities", "suggests high-level, multi-task broad cognitive capabilities", "may be extracted by simple prompting"],
+["Importance", "carefully exploring and analyzing the enormous zero-shot knowledge", "hidden inside LLMs"],
+["Hope", "work serves as", "minimal strongest zero-shot baseline for the challenging reasoning benchmarks"],
+["Hope", "work highlights", "importance of exploring and analyzing the enormous zero-shot knowledge hidden inside LLMs"]
+]
+Pretrained large language models (LLMs) are widely used in many sub-fields of natural language processing (NLP) and generally known as excellent few-shot learners with task-specific exemplars. Notably, chain of thought (CoT) prompting, a recent technique for eliciting complex multi-step reasoning through step-bystep answer examples, achieved the state-of-the-art performances in arithmetics and symbolic reasoning, difficult system-2 tasks that do not follow the standard scaling laws for LLMs. While these successes are often attributed to LLMs’ ability for few-shot learning, we show that LLMs are decent zero-shot reasoners by simply adding “Let’s think step by step” before each answer. Experimental results demonstrate that our Zero-shot-CoT, using the same single prompt template, significantly outperforms zero-shot LLM performances on diverse benchmark reasoning tasks including arithmetics (MultiArith, GSM8K, AQUA-RAT, SVAMP), symbolic reasoning (Last Letter, Coin Flip), and other logical reasoning tasks (Date Understanding, Tracking Shuffled Objects), without any hand-crafted few-shot examples, e.g. increasing the accuracy on MultiArith from 17.7% to 78.7% and GSM8K from 10.4% to 40.7% with large-scale InstructGPT model (text-davinci002), as well as similar magnitudes of improvements with another off-the-shelf large model, 540B parameter PaLM. The versatility of this single prompt across very diverse reasoning tasks hints at untapped and understudied fundamental zero-shot capabilities of LLMs, suggesting high-level, multi-task broad cognitive capabilities may be extracted by simple prompting. We hope our work not only serves as the minimal strongest zero-shot baseline for the challenging reasoning benchmarks, but also highlights the importance of carefully exploring and analyzing the enormous zero-shot knowledge hidden inside LLMs before crafting finetuning datasets or few-shot exemplars.
+
+[
+["Over-fitting", "obstacle", "GCNs"],
+["Over-smoothing", "obstacle", "GCNs"],
+["GCNs", "purpose", "node classification"],
+["DropEdge", "proposed for", "alleviating over-fitting and over-smoothing"],
+["DropEdge", "function", "randomly removes edges"],
+["DropEdge", "acts as", "data augmenter"],
+["DropEdge", "acts as", "message passing reducer"],
+["DropEdge", "effect", "reduces convergence speed of over-smoothing or relieves information loss"],
+["DropEdge", "applicable to", "GCN"],
+["DropEdge", "applicable to", "ResGCN"],
+["DropEdge", "applicable to", "GraphSAGE"],
+["DropEdge", "applicable to", "JKNet"],
+["Experiments", "validate", "DropEdge"],
+["DropEdge", "prevents", "over-smoothing"],
+["Codes", "available at", "https://github.com/DropEdge/DropEdge"]
+]
+Over-fitting and over-smoothing are two main obstacles of developing deep Graph Convolutional Networks (GCNs) for node classification. In particular, over-fitting weakens the generalization ability on small dataset, while over-smoothing impedes model training by isolating output representations from the input features with the increase in network depth.  This paper proposes DropEdge, a novel and flexible technique to alleviate both issues. At its core, DropEdge randomly removes a certain number of edges from the input graph at each training epoch, acting like a data augmenter and also a message passing reducer. Furthermore, we theoretically demonstrate that DropEdge either reduces the convergence speed of over-smoothing or relieves the information loss caused by it. More importantly, our DropEdge is a general skill that can be equipped with many other backbone models (e.g.  GCN, ResGCN, GraphSAGE, and JKNet) for enhanced performance.  Extensive experiments on several benchmarks verify that DropEdge consistently improves the performance on a variety of both shallow and deep GCNs.  The effect of DropEdge on preventing over-smoothing is empirically visualized and validated as well.  Codes are released on https://github.com/DropEdge/DropEdge
+
+[
+["Paper", "focus", "self-supervised learning properties of ViT"],
+["ViT", "compared to", "convnets"],
+["Self-supervised ViT", "observation", "contains explicit information about semantic segmentation"],
+["Self-supervised ViT", "observation", "excellent k-NN classifiers"],
+["Self-supervised ViT", "performance", "78.3% top-1 on ImageNet with a small ViT"],
+["Momentum encoder", "importance", "self-supervised learning"],
+["Multi-crop training", "importance", "self-supervised learning"],
+["Small patches", "importance", "self-supervised learning with ViTs"],
+["DINO", "implemented", "self-supervised method"],
+["DINO", "interpretation", "self-distillation with no labels"],
+["DINO", "synergy", "ViTs"],
+["DINO and ViT-Base", "performance", "80.1% top-1 on ImageNet in linear evaluation"]
+]
+
+[AI]: This paper focuses on exploring the self-supervised learning properties of Vision Transformer (ViT) in comparison to convolutional neural networks (convnets). The authors observe that self-supervised ViT contains explicit information about semantic segmentation and can perform excellent k-NN classification. Even a small version of self-supervised ViT achieves 78.3% top-1 on ImageNet. The paper highlights the importance of self-supervised learning techniques like momentum encoder, multi-crop training, and small patches for ViTs. They also implement DINO, a self-supervised method that uses self-distillation with no labels and shows a synergy with ViTs. In the end, DINO and ViT-Base achieve a top-1 accuracy of 80.1% on ImageNet in linear evaluation.
+
+[ME]:
+#+end_ai
+In this paper, we question if self-supervised learning provides new properties to Vision Transformer (ViT) [19] that stand out compared to convolutional networks (convnets).  Beyond the fact that adapting self-supervised methods to this architecture works particularly well, we make the following observations: first, self-supervised ViT features contain explicit information about the semantic segmentation of an image, which does not emerge as clearly with supervised ViTs, nor with convnets. Second, these features are also excellent k-NN classifiers, reaching 78.3% top-1 on ImageNet with a small ViT. Our study also underlines the importance of momentum encoder [33], multi-crop training [10], and the use of small patches with ViTs. We implement our findings into a simple self-supervised method, called DINO, which we interpret as a form of self-distillation with no labels.  We show the synergy between DINO and ViTs by achieving 80.1% top-1 on ImageNet in linear evaluation with ViT-Base.
+
+
+#+begin_ai
+[ME]:
+### Find this
+
+In this paper, we question if self-supervised learning provides new properties to Vision Transformer (ViT) [19] that stand out compared to convolutional networks (convnets).  Beyond the fact that adapting self-supervised methods to this architecture works particularly well, we make the following observations: first, self-supervised ViT features contain explicit information about the semantic segmentation of an image, which does not emerge as clearly with supervised ViTs, nor with convnets. Second, these features are also excellent k-NN classifiers, reaching 78.3% top-1 on ImageNet with a small ViT. Our study also underlines the importance of momentum encoder [33], multi-crop training [10], and the use of small patches with ViTs. We implement our findings into a simple self-supervised method, called DINO, which we interpret as a form of self-distillation with no labels.  We show the synergy between DINO and ViTs by achieving 80.1% top-1 on ImageNet in linear evaluation with ViT-Base.
+[
+["Paper", "focus", "self-supervised learning properties of ViT"],
+["ViT", "compared to", "convnets"],
+["Self-supervised ViT", "observation", "contains explicit information about semantic segmentation"],
+["Self-supervised ViT", "observation", "excellent k-NN classifiers"],
+["Self-supervised ViT", "performance", "78.3% top-1 on ImageNet with a small ViT"],
+["Momentum encoder", "importance", "self-supervised learning"],
+["Multi-crop training", "importance", "self-supervised learning"],
+["Small patches", "importance", "self-supervised learning with ViTs"],
+["DINO", "implemented", "self-supervised method"],
+["DINO", "interpretation", "self-distillation with no labels"],
+["DINO", "synergy", "ViTs"],
+["DINO and ViT-Base", "performance", "80.1% top-1 on ImageNet in linear evaluation"]
+]
+
+Over-fitting and over-smoothing are two main obstacles of developing deep Graph Convolutional Networks (GCNs) for node classification. In particular, over-fitting weakens the generalization ability on small dataset, while over-smoothing impedes model training by isolating output representations from the input features with the increase in network depth.  This paper proposes DropEdge, a novel and flexible technique to alleviate both issues. At its core, DropEdge randomly removes a certain number of edges from the input graph at each training epoch, acting like a data augmenter and also a message passing reducer. Furthermore, we theoretically demonstrate that DropEdge either reduces the convergence speed of over-smoothing or relieves the information loss caused by it. More importantly, our DropEdge is a general skill that can be equipped with many other backbone models (e.g.  GCN, ResGCN, GraphSAGE, and JKNet) for enhanced performance.  Extensive experiments on several benchmarks verify that DropEdge consistently improves the performance on a variety of both shallow and deep GCNs.  The effect of DropEdge on preventing over-smoothing is empirically visualized and validated as well.  Codes are released on https://github.com/DropEdge/DropEdge
+[
+["Over-fitting", "obstacle", "GCNs"],
+["Over-smoothing", "obstacle", "GCNs"],
+["GCNs", "purpose", "node classification"],
+["DropEdge", "proposed for", "alleviating over-fitting and over-smoothing"],
+["DropEdge", "function", "randomly removes edges"],
+["DropEdge", "acts as", "data augmenter"],
+["DropEdge", "acts as", "message passing reducer"],
+["DropEdge", "effect", "reduces convergence speed of over-smoothing or relieves information loss"],
+["DropEdge", "applicable to", "GCN"],
+["DropEdge", "applicable to", "ResGCN"],
+["DropEdge", "applicable to", "GraphSAGE"],
+["DropEdge", "applicable to", "JKNet"],
+["Experiments", "validate", "DropEdge"],
+["DropEdge", "prevents", "over-smoothing"],
+["Codes", "available at", "https://github.com/DropEdge/DropEdge"]
+]
+#+end_ai
+
+#+begin_ai
+[ME]:
+### What is the relationship between input and output base on these examples?
+
+### E.g.
+input: on
+output: off
+
+input: up
+output: down
+
+input: left
+output: right
+#### E.g. end
+
+
+[AI]: The relationship between input and output in these examples is that they are opposites or inversions of each other. For example, if the input is "on", the output is "off", and if the input is "up", the output is "down". Similarly, if the input is "left", the output is "right".
+
+[ME]: Could you please give more example?
+
+[AI]: Sure, here are some more examples:
+
+- Input: hot; Output: cold
+- Input: fast; Output: slow
+- Input: high; Output: low
+- Input: open; Output: close
+- Input: forward; Output: backward
+- Input: positive; Output: negative
+- Input: push; Output: pull
+- Input: big; Output: small
+- Input: wet; Output: dry
+- Input: rough; Output: smooth
+
+[ME]:
+#+end_ai
+
+
+#+begin_ai
+### What is the relationship between input and output base on these examples?
+
+### E.g.
+input: red
+output: green
+
+input: hat
+output: shoes
+
+input: apple
+output: orange
+#### E.g. end
+
+
+[AI]: There seems to be no clear relationship between the input and output based on these examples. They appear to be random pairs of words without any established pattern or rule.
+
+[ME]: Could you please give more example?
+
+[AI]: Sure, here are some more examples:
+
+- Input: book, Output: pen
+- Input: coffee, Output: tea
+- Input: dog, Output: cat
+- Input: rain, Output: sun
+- Input: pencil, Output: eraser
+
+As you can see, there is no consistent pattern or rule that can be identified to explain the relationship between the input and output words.
+
+[ME]:
+#+end_ai
+
+#+begin_ai
+[ME]:
+### Select the the correct relationship pair based on the example.
+
+### E.g.
+input: 菜刀
+output: 砧板
+### E.g. end
+
+### Options
+input: 火车
+output: 铁轨
+
+input: 飞机
+output: 引擎
+
+input: 电脑
+output: 操作系统
+
+input: 行星
+output: 轨道
+### Options end
+
+[AI]: input: \347\201\253\350\275\246
+output: \351\223\201\350\275\250 is a correct pair.
+
+It is not possible to determine the correct relationship pair based on the other examples as they are just random combinations of Chinese characters.
+
+[ME]:
+#+end_ai

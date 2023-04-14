@@ -5,6 +5,31 @@
   file = {/Users/Nasy/Zotero/storage/Z7HR8Q7A/science.html}
 }
 
+@inproceedings{akyurekWhatLearningAlgorithm2023,
+  title = {\hspace{0pt}\hspace{0pt}{{What}} Learning Algorithm Is In-Context Learning? {{Investigations}} with Linear Models},
+  shorttitle = {\hspace{0pt}\hspace{0pt}{{What}} Learning Algorithm Is In-Context Learning?},
+  author = {Akyürek, Ekin and Schuurmans, Dale and Andreas, Jacob and Ma, Tengyu and Zhou, Denny},
+  date = {2023-02-01},
+  url = {https://openreview.net/forum?id=0g0X4H8yN4I},
+  abstract = {Neural sequence models, especially transformers, exhibit a remarkable capacity for in-context learning. They can construct new predictors from sequences of labeled examples \$(x, f(x))\$ presented in the input without further parameter updates. We investigate the hypothesis that transformer-based in-context learners implement standard learning algorithms implicitly, by encoding context-specific parametric models in their hidden representations, and updating these implicit models as new examples appear in the context. Using linear regression as a model problem, we offer three sources of evidence for this hypothesis. First, we prove by construction that transformers can implement learning algorithms for linear models based on gradient descent and closed-form computation of regression parameters. Second, we show that trained in-context learners closely match the predictors computed by gradient descent, ridge regression, and exact least-squares regression, transitioning between different predictors as transformer depth and dataset noise vary. Third, we present preliminary evidence that in-context learners share algorithmic features with these predictors: learners' late layers encode weight vectors and moment matrices. These results suggest that in-context learning is understandable in algorithmic terms, and that (at least in the linear case) learners may work by rediscovering standard estimation algorithms.},
+  eventtitle = {The {{Eleventh International Conference}} on {{Learning Representations}}},
+  langid = {english},
+  file = {/Users/Nasy/Zotero/storage/ZWQ2N4G3/Akyürek et al. - 2023 - What learning algorithm is in-context learning .pdf}
+}
+
+@article{anonymousRethinkingRoleDemonstrations2022,
+  title = {Rethinking the {{Role}} of {{Demonstrations}}: {{What Makes In-Context Learning Work}}?},
+  shorttitle = {Rethinking the {{Role}} of {{Demonstrations}}},
+  author = {Anonymous},
+  date = {2022-04-21},
+  url = {https://openreview.net/forum?id=cnRGMv-Ak7u},
+  urldate = {2023-04-09},
+  abstract = {Large language models (LMs) are able to in-context learn -- perform a new task via inference alone by conditioning on a few input-label pairs (demonstrations) and making predictions for new inputs. However, there has been little understanding of how the model learns and which aspects of the demonstrations contribute to end task performance. In this paper, we show that ground truth demonstrations are in fact not required -- randomly replacing labels in the demonstrations barely hurts performance, consistently over 12 different models including GPT-3. Instead, we find that other aspects of the demonstrations are the key drivers of end task performance, including the fact that they provide a few examples of (1) the label space, (2) the distribution of the input text, and (3) the overall format of the sequence. Together, our analysis provides a new way of understanding how and why in-context learning works, while opening up new questions about how much can be learned from large language models through inference alone.},
+  langid = {english},
+  keywords = {⛔ No DOI found},
+  file = {/Users/Nasy/Zotero/storage/TW9Q2VUA/Anonymous - 2022 - Rethinking the Role of Demonstrations What Makes .pdf}
+}
+
 @online{AntigenSpecificTCRSignatures,
   title = {Antigen-{{Specific TCR Signatures}} of {{Cytomegalovirus Infection}} | {{The Journal}} of {{Immunology}}},
   url = {https://www.jimmunol.org/content/202/3/979},
@@ -392,6 +417,22 @@
   file = {/Users/Nasy/Zotero/storage/SWMCNACB/8855593.html}
 }
 
+@inproceedings{chenImprovingInContextFewShot2022,
+  title = {Improving {{In-Context Few-Shot Learning}} via {{Self-Supervised Training}}},
+  booktitle = {Proceedings of the 2022 {{Conference}} of the {{North American Chapter}} of the {{Association}} for {{Computational Linguistics}}: {{Human Language Technologies}}},
+  author = {Chen, Mingda and Du, Jingfei and Pasunuru, Ramakanth and Mihaylov, Todor and Iyer, Srini and Stoyanov, Veselin and Kozareva, Zornitsa},
+  date = {2022-07},
+  pages = {3558--3573},
+  publisher = {{Association for Computational Linguistics}},
+  location = {{Seattle, United States}},
+  doi = {10.18653/v1/2022.naacl-main.260},
+  url = {https://aclanthology.org/2022.naacl-main.260},
+  abstract = {Self-supervised pretraining has made few-shot learning possible for many NLP tasks. But the pretraining objectives are not typically adapted specifically for in-context few-shot learning. In this paper, we propose to use self-supervision in an intermediate training stage between pretraining and downstream few-shot usage with the goal to teach the model to perform in-context few shot learning. We propose and evaluate four self-supervised objectives on two benchmarks. We find that the intermediate self-supervision stage produces models that outperform strong baselines. Ablation study shows that several factors affect the downstream performance, such as the amount of training data and the diversity of the self-supervised objectives. Human-annotated cross-task supervision and self-supervision are complementary. Qualitative analysis suggests that the self-supervised-trained models are better at following task requirements.},
+  eventtitle = {{{NAACL-HLT}} 2022},
+  annotation = {0 citations (Crossref) [2023-04-09]},
+  file = {/Users/Nasy/Zotero/storage/4HDLFHX2/Chen et al. - 2022 - Improving In-Context Few-Shot Learning via Self-Su.pdf}
+}
+
 @inproceedings{chenPMEProjectedMetric2018,
   title = {{{PME}}: {{Projected Metric Embedding}} on {{Heterogeneous Networks}} for {{Link Prediction}}},
   shorttitle = {{{PME}}},
@@ -656,6 +697,22 @@
   file = {/Users/Nasy/Zotero/storage/87DNKR3M/Cuoco et al. - 2020 - Enhancing Gravitational-Wave Science with Machine .pdf}
 }
 
+@online{daiWhyCanGPT2022,
+  title = {Why {{Can GPT Learn In-Context}}? {{Language Models Secretly Perform Gradient Descent}} as {{Meta-Optimizers}}},
+  shorttitle = {Why {{Can GPT Learn In-Context}}?},
+  author = {Dai, Damai and Sun, Yutao and Dong, Li and Hao, Yaru and Sui, Zhifang and Wei, Furu},
+  date = {2022-12-21},
+  number = {arXiv:2212.10559},
+  eprint = {arXiv:2212.10559},
+  eprinttype = {arxiv},
+  doi = {10.48550/arXiv.2212.10559},
+  url = {http://arxiv.org/abs/2212.10559},
+  abstract = {Large pretrained language models have shown surprising In-Context Learning (ICL) ability. With a few demonstration input-label pairs, they can predict the label for an unseen input without additional parameter updates. Despite the great success in performance, the working mechanism of ICL still remains an open problem. In order to better understand how ICL works, this paper explains language models as meta-optimizers and understands ICL as a kind of implicit finetuning. Theoretically, we figure out that the Transformer attention has a dual form of gradient descent based optimization. On top of it, we understand ICL as follows: GPT first produces meta-gradients according to the demonstration examples, and then these meta-gradients are applied to the original GPT to build an ICL model. Experimentally, we comprehensively compare the behavior of ICL and explicit finetuning based on real tasks to provide empirical evidence that supports our understanding. The results prove that ICL behaves similarly to explicit finetuning at the prediction level, the representation level, and the attention behavior level. Further, inspired by our understanding of meta-optimization, we design a momentum-based attention by analogy with the momentum-based gradient descent algorithm. Its consistently better performance over vanilla attention supports our understanding again from another aspect, and more importantly, it shows the potential to utilize our understanding for future model designing.},
+  pubstate = {preprint},
+  keywords = {Computer Science - Computation and Language},
+  file = {/Users/Nasy/Zotero/storage/DUKE28US/Dai et al. - 2022 - Why Can GPT Learn In-Context Language Models Secr.pdf;/Users/Nasy/Zotero/storage/2RZNTM66/2212.html}
+}
+
 @inproceedings{dallamicoRevisitingBetheHessianImproved2019,
   title = {Revisiting the {{Bethe-Hessian}}: {{Improved Community Detection}} in {{Sparse Heterogeneous Graphs}}},
   shorttitle = {Revisiting the {{Bethe-Hessian}}},
@@ -744,6 +801,20 @@
   langid = {english},
   annotation = {137 citations (Crossref) [2022-11-04]},
   file = {/Users/Nasy/Zotero/storage/RUWHGICI/Dissanayake and Phan-Thien - 1994 - Neural-network-based approximations for solving pa.pdf;/Users/Nasy/Zotero/storage/XZ9EG6CZ/cnm.html}
+}
+
+@online{dongSurveyIncontextLearning2023,
+  title = {A {{Survey}} on {{In-context Learning}}},
+  author = {Dong, Qingxiu and Li, Lei and Dai, Damai and Zheng, Ce and Wu, Zhiyong and Chang, Baobao and Sun, Xu and Xu, Jingjing and Li, Lei and Sui, Zhifang},
+  date = {2023-02-07},
+  number = {arXiv:2301.00234},
+  eprint = {arXiv:2301.00234},
+  eprinttype = {arxiv},
+  url = {http://arxiv.org/abs/2301.00234},
+  abstract = {With the increasing ability of large language models (LLMs), in-context learning (ICL) has become a new paradigm for natural language processing (NLP), where LLMs make predictions only based on contexts augmented with a few examples. It has been a new trend to explore ICL to evaluate and extrapolate the ability of LLMs. In this paper, we aim to survey and summarize the progress and challenges of ICL. We first present a formal definition of ICL and clarify its correlation to related studies. Then, we organize and discuss advanced techniques, including training strategies, demonstration designing strategies, as well as related analysis. Finally, we discuss the challenges of ICL and provide potential directions for further research. We hope that our work can encourage more research on uncovering how ICL works and improving ICL.},
+  pubstate = {preprint},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
+  file = {/Users/Nasy/Zotero/storage/WLYSRMUD/Dong et al. - 2023 - A Survey on In-context Learning.pdf;/Users/Nasy/Zotero/storage/AFY7KFUB/2301.html}
 }
 
 @article{dunnThreeEsCancer2004,
@@ -1762,6 +1833,20 @@
   file = {/Users/Nasy/Zotero/storage/8R4EI9JT/Klicpera et al. - 2019 - Predict then Propagate Graph Neural Networks meet.pdf;/Users/Nasy/Zotero/storage/MN6NYZPC/1810.html}
 }
 
+@online{kojimaLargeLanguageModels2023,
+  title = {Large {{Language Models}} Are {{Zero-Shot Reasoners}}},
+  author = {Kojima, Takeshi and Gu, Shixiang Shane and Reid, Machel and Matsuo, Yutaka and Iwasawa, Yusuke},
+  date = {2023-01-29},
+  number = {arXiv:2205.11916},
+  eprint = {arXiv:2205.11916},
+  eprinttype = {arxiv},
+  url = {http://arxiv.org/abs/2205.11916},
+  abstract = {Pretrained large language models (LLMs) are widely used in many sub-fields of natural language processing (NLP) and generally known as excellent few-shot learners with task-specific exemplars. Notably, chain of thought (CoT) prompting, a recent technique for eliciting complex multi-step reasoning through step-by-step answer examples, achieved the state-of-the-art performances in arithmetics and symbolic reasoning, difficult system-2 tasks that do not follow the standard scaling laws for LLMs. While these successes are often attributed to LLMs' ability for few-shot learning, we show that LLMs are decent zero-shot reasoners by simply adding "Let's think step by step" before each answer. Experimental results demonstrate that our Zero-shot-CoT, using the same single prompt template, significantly outperforms zero-shot LLM performances on diverse benchmark reasoning tasks including arithmetics (MultiArith, GSM8K, AQUA-RAT, SVAMP), symbolic reasoning (Last Letter, Coin Flip), and other logical reasoning tasks (Date Understanding, Tracking Shuffled Objects), without any hand-crafted few-shot examples, e.g. increasing the accuracy on MultiArith from 17.7\% to 78.7\% and GSM8K from 10.4\% to 40.7\% with large InstructGPT model (text-davinci-002), as well as similar magnitudes of improvements with another off-the-shelf large model, 540B parameter PaLM. The versatility of this single prompt across very diverse reasoning tasks hints at untapped and understudied fundamental zero-shot capabilities of LLMs, suggesting high-level, multi-task broad cognitive capabilities may be extracted by simple prompting. We hope our work not only serves as the minimal strongest zero-shot baseline for the challenging reasoning benchmarks, but also highlights the importance of carefully exploring and analyzing the enormous zero-shot knowledge hidden inside LLMs before crafting finetuning datasets or few-shot exemplars.},
+  pubstate = {preprint},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language,Computer Science - Machine Learning},
+  file = {/Users/Nasy/Zotero/storage/G4SZH4CT/Kojima et al. - 2023 - Large Language Models are Zero-Shot Reasoners.pdf;/Users/Nasy/Zotero/storage/S6DBEJ2T/2205.html}
+}
+
 @article{krioukovHyperbolicGeometryComplex2010,
   title = {Hyperbolic {{Geometry}} of {{Complex Networks}}},
   author = {Krioukov, Dmitri and Papadopoulos, Fragkiskos and Kitsak, Maksim and Vahdat, Amin and Boguna, Marian},
@@ -1861,6 +1946,21 @@
   urldate = {2022-08-19},
   abstract = {Adaptive immune recognition is mediated by specific interactions between heterodimeric T cell receptors (TCRs) and their cognate peptide-MHC (pMHC) ligands, and the methods to accurately predict TCR:pMHC interaction would have profound clinical, therapeutic and pharmaceutical applications. Herein, we review recent developments in predicting cross-reactivity and antigen specificity of TCR recognition. We discuss current experimental and computational approaches to investigate cross-reactivity and antigen-specificity of TCRs and highlight how integrating kinetic, biophysical and structural features may offer valuable insights in modeling immunogenicity. We further underscore the close inter-relationship of these two interconnected notions and the need to investigate each in the light of the other for a better understanding of T cell responsiveness for the effective clinical applications.},
   file = {/Users/Nasy/Zotero/storage/A9KMKSN6/Lee et al. - 2020 - Predicting Cross-Reactivity and Antigen Specificit.pdf}
+}
+
+@online{liAdvanceMakingLanguage2022,
+  title = {On the {{Advance}} of {{Making Language Models Better Reasoners}}},
+  author = {Li, Yifei and Lin, Zeqi and Zhang, Shizhuo and Fu, Qiang and Chen, Bei and Lou, Jian-Guang and Chen, Weizhu},
+  date = {2022-06-07},
+  number = {arXiv:2206.02336},
+  eprint = {arXiv:2206.02336},
+  eprinttype = {arxiv},
+  doi = {10.48550/arXiv.2206.02336},
+  url = {http://arxiv.org/abs/2206.02336},
+  abstract = {Large language models such as GPT-3 and PaLM have shown remarkable performance in few-shot learning. However, they still struggle with reasoning tasks such as the arithmetic benchmark GSM8K. Recent advances deliberately guide the language model to generate a chain of reasoning steps before producing the final answer, successfully boosting the GSM8K benchmark from 17.9\% to 58.1\% in terms of problem solving rate. In this paper, we propose a new approach, DiVeRSe (Diverse Verifier on Reasoning Step), to further advance their reasoning capability. DiVeRSe first explores different prompts to enhance the diversity in reasoning paths. Second, DiVeRSe introduces a verifier to distinguish good answers from bad answers for a better weighted voting. Finally, DiVeRSe verifies the correctness of each single step rather than all the steps in a whole. We conduct extensive experiments using the latest language model code-davinci-002 and demonstrate that DiVeRSe can achieve new state-of-the-art performance on six out of eight reasoning benchmarks (e.g., GSM8K 74.4\% to 83.2\%), outperforming the PaLM model with 540B parameters.},
+  pubstate = {preprint},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
+  file = {/Users/Nasy/Zotero/storage/DSVIBI53/Li et al. - 2022 - On the Advance of Making Language Models Better Re.pdf;/Users/Nasy/Zotero/storage/UVT3742E/2206.html}
 }
 
 @inproceedings{liaoHeterogeneousGraphModel2014,
@@ -2205,6 +2305,23 @@
   file = {/Users/Nasy/Zotero/storage/D35754NX/Lu et al. - 2021 - DeepXDE A Deep Learning Library for Solving Diffe.pdf}
 }
 
+@inproceedings{luFantasticallyOrderedPrompts2022,
+  title = {Fantastically {{Ordered Prompts}} and {{Where}} to {{Find Them}}: {{Overcoming Few-Shot Prompt Order Sensitivity}}},
+  shorttitle = {Fantastically {{Ordered Prompts}} and {{Where}} to {{Find Them}}},
+  booktitle = {Proceedings of the 60th {{Annual Meeting}} of the {{Association}} for {{Computational Linguistics}} ({{Volume}} 1: {{Long Papers}})},
+  author = {Lu, Yao and Bartolo, Max and Moore, Alastair and Riedel, Sebastian and Stenetorp, Pontus},
+  date = {2022-05},
+  pages = {8086--8098},
+  publisher = {{Association for Computational Linguistics}},
+  location = {{Dublin, Ireland}},
+  doi = {10.18653/v1/2022.acl-long.556},
+  url = {https://aclanthology.org/2022.acl-long.556},
+  abstract = {When primed with only a handful of training samples, very large, pretrained language models such as GPT-3 have shown competitive results when compared to fully-supervised, fine-tuned, large, pretrained language models. We demonstrate that the order in which the samples are provided can make the difference between near state-of-the-art and random guess performance: essentially some permutations are “fantastic” and some not. We analyse this phenomenon in detail, establishing that: it is present across model sizes (even for the largest current models), it is not related to a specific subset of samples, and that a given good permutation for one model is not transferable to another. While one could use a development set to determine which permutations are performant, this would deviate from the true few-shot setting as it requires additional annotated data. Instead, we use the generative nature of language models to construct an artificial development set and based on entropy statistics of the candidate permutations on this set, we identify performant prompts. Our method yields a 13\% relative improvement for GPT-family models across eleven different established text classification tasks.},
+  eventtitle = {{{ACL}} 2022},
+  annotation = {9 citations (Crossref) [2023-04-09]},
+  file = {/Users/Nasy/Zotero/storage/2ZFXRGE5/Lu et al. - 2022 - Fantastically Ordered Prompts and Where to Find Th.pdf}
+}
+
 @article{maduraTcellReceptorSpecificity2013,
   title = {T-Cell {{Receptor Specificity Maintained}} by {{Altered Thermodynamics}}},
   author = {Madura, Florian and Rizkallah, Pierre J. and Miles, Kim M. and Holland, Christopher J. and Bulek, Anna M. and Fuller, Anna and Schauenburg, Andrea J. A. and Miles, John J. and Liddy, Nathaniel and Sami, Malkit and Li, Yi and Hossain, Moushumi and Baker, Brian M. and Jakobsen, Bent K. and Sewell, Andrew K. and Cole, David K.},
@@ -2302,6 +2419,38 @@
   file = {/Users/Nasy/Zotero/storage/46EMJV8H/6812698.html}
 }
 
+@inproceedings{minNoisyChannelLanguage2022,
+  title = {Noisy {{Channel Language Model Prompting}} for {{Few-Shot Text Classification}}},
+  booktitle = {Proceedings of the 60th {{Annual Meeting}} of the {{Association}} for {{Computational Linguistics}} ({{Volume}} 1: {{Long Papers}})},
+  author = {Min, Sewon and Lewis, Mike and Hajishirzi, Hannaneh and Zettlemoyer, Luke},
+  date = {2022-05},
+  pages = {5316--5330},
+  publisher = {{Association for Computational Linguistics}},
+  location = {{Dublin, Ireland}},
+  doi = {10.18653/v1/2022.acl-long.365},
+  url = {https://aclanthology.org/2022.acl-long.365},
+  abstract = {We introduce a noisy channel approach for language model prompting in few-shot text classification. Instead of computing the likelihood of the label given the input (referred as direct models), channel models compute the conditional probability of the input given the label, and are thereby required to explain every word in the input. We use channel models for recently proposed few-shot learning methods with no or very limited updates to the language model parameters, via either in-context demonstration or prompt tuning. Our experiments show that, for both methods, channel models significantly outperform their direct counterparts, which we attribute to their stability, i.e., lower variance and higher worst-case accuracy. We also present extensive ablations that provide recommendations for when to use channel prompt tuning instead of other competitive models (e.g., direct head tuning): channel prompt tuning is preferred when the number of training examples is small, labels in the training data are imbalanced, or generalization to unseen labels is required.},
+  eventtitle = {{{ACL}} 2022},
+  annotation = {2 citations (Crossref) [2023-04-09]},
+  file = {/Users/Nasy/Zotero/storage/XKBDBFW6/Min et al. - 2022 - Noisy Channel Language Model Prompting for Few-Sho.pdf}
+}
+
+@online{minRethinkingRoleDemonstrations2022,
+  title = {Rethinking the {{Role}} of {{Demonstrations}}: {{What Makes In-Context Learning Work}}?},
+  shorttitle = {Rethinking the {{Role}} of {{Demonstrations}}},
+  author = {Min, Sewon and Lyu, Xinxi and Holtzman, Ari and Artetxe, Mikel and Lewis, Mike and Hajishirzi, Hannaneh and Zettlemoyer, Luke},
+  date = {2022-10-20},
+  number = {arXiv:2202.12837},
+  eprint = {arXiv:2202.12837},
+  eprinttype = {arxiv},
+  doi = {10.48550/arXiv.2202.12837},
+  url = {http://arxiv.org/abs/2202.12837},
+  abstract = {Large language models (LMs) are able to in-context learn -- perform a new task via inference alone by conditioning on a few input-label pairs (demonstrations) and making predictions for new inputs. However, there has been little understanding of how the model learns and which aspects of the demonstrations contribute to end task performance. In this paper, we show that ground truth demonstrations are in fact not required -- randomly replacing labels in the demonstrations barely hurts performance on a range of classification and multi-choce tasks, consistently over 12 different models including GPT-3. Instead, we find that other aspects of the demonstrations are the key drivers of end task performance, including the fact that they provide a few examples of (1) the label space, (2) the distribution of the input text, and (3) the overall format of the sequence. Together, our analysis provides a new way of understanding how and why in-context learning works, while opening up new questions about how much can be learned from large language models through inference alone.},
+  pubstate = {preprint},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
+  file = {/Users/Nasy/Zotero/storage/37NL9HLZ/Min et al. - 2022 - Rethinking the Role of Demonstrations What Makes .pdf;/Users/Nasy/Zotero/storage/E2QE99SB/2202.html}
+}
+
 @unpublished{mishraOptimizationModelIndependent2021,
   title = {Optimization of Model Independent Gravitational Wave Search Using Machine Learning},
   author = {Mishra, Tanmaya and O'Brien, Brendan and Gayathri, V. and Szczepanczyk, Marek and Bhaumik, Shubhagata and Bartos, Imre and Klimenko, Sergey},
@@ -2352,6 +2501,57 @@
   file = {/Users/Nasy/Zotero/storage/AFLLLZ3T/Mould et al. - 2022 - Deep learning and Bayesian inference of gravitatio.pdf;/Users/Nasy/Zotero/storage/HQIWC78X/2203.html}
 }
 
+@software{naAutoPaperDownload2023,
+  title = {Auto {{Paper}}: {{Download}} and Save Daily Papers},
+  shorttitle = {Auto {{Paper}}},
+  author = {Na, Saiyang},
+  date = {2023-04-04},
+  doi = {10.5281/zenodo.7796951},
+  url = {https://zenodo.org/record/7796951},
+  urldate = {2023-04-04},
+  abstract = {The first version.},
+  organization = {{Zenodo}},
+  file = {/Users/Nasy/Zotero/storage/B45N347M/7796951.html}
+}
+
+@software{naNasyxxAutoPaper2023,
+  title = {Nasyxx/Auto\_paper: V0.1.0},
+  shorttitle = {Nasyxx/Auto\_paper},
+  author = {Na, Saiyang},
+  date = {2023-04-04},
+  doi = {10.5281/zenodo.7796951},
+  url = {https://zenodo.org/record/7796951},
+  abstract = {The first version.},
+  organization = {{Zenodo}},
+  file = {/Users/Nasy/Zotero/storage/HHH5BS8I/7796951.html}
+}
+
+@software{naNasyxxEmacs20232023,
+  title = {Nasyxx/Emacs.d: 2023 03 31 Version},
+  shorttitle = {Nasyxx/Emacs.d},
+  author = {Na, Saiyang and {haasdo95} and Berserk},
+  date = {2023-04-01},
+  doi = {10.5281/zenodo.7790390},
+  url = {https://zenodo.org/record/7790390},
+  urldate = {2023-04-01},
+  abstract = {My emacs configuration},
+  organization = {{Zenodo}},
+  file = {/Users/Nasy/Zotero/storage/RIBD3ULV/Na et al. - 2023 - nasyxxemacs.d 2023 03 31 version.pdf}
+}
+
+@software{naNasyxxEmacs20232023a,
+  title = {Nasyxx/Emacs.d: 2023 03 31 Version},
+  shorttitle = {Nasyxx/Emacs.d},
+  author = {Na, Saiyang and {haasdo95} and Berserk},
+  date = {2023-04-01},
+  doi = {10.5281/zenodo.7790390},
+  url = {https://zenodo.org/record/7790390},
+  urldate = {2023-04-01},
+  abstract = {My emacs configuration},
+  organization = {{Zenodo}},
+  file = {/Users/Nasy/Zotero/storage/IDRL2QX5/Na et al. - 2023 - nasyxxemacs.d 2023 03 31 version.pdf}
+}
+
 @software{nasyBeamerThemeSMILE2022,
   title = {Beamer {{Theme}} in {{SMILE}}},
   author = {Nasy},
@@ -2361,6 +2561,19 @@
   urldate = {2022-04-15},
   organization = {{uta-smile}},
   keywords = {\#nosource}
+}
+
+@software{nasyNasyxxAutoPaper2023,
+  title = {Nasyxx/Auto\_paper: V0.1.0},
+  shorttitle = {Nasyxx/Auto\_paper},
+  author = {Nasy},
+  date = {2023-04-04},
+  doi = {10.5281/zenodo.7796951},
+  url = {https://zenodo.org/record/7796951},
+  urldate = {2023-04-04},
+  abstract = {The first version.},
+  organization = {{Zenodo}},
+  file = {/Users/Nasy/Zotero/storage/BEB5KI9W/7796951.html}
 }
 
 @online{NeoantigensCancerImmunotherapy,
@@ -2759,6 +2972,19 @@
   abstract = {We describe a case study of translational research, applying interpretability techniques developed for computer vision to machine learning models used to search for and find gravitational waves. The models we study are trained to detect black hole merger events in non-Gaussian and non-stationary advanced Laser Interferometer Gravitational-wave Observatory (LIGO) data. We produced visualizations of the response of machine learning models when they process advanced LIGO data that contains real gravitational wave signals, noise anomalies, and pure advanced LIGO noise. Our findings shed light on the responses of individual neurons in these machine learning models. Further analysis suggests that different parts of the network appear to specialize in local versus global features, and that this difference appears to be rooted in the branched architecture of the network as well as noise characteristics of the LIGO detectors. We believe efforts to whiten these "black box" models can suggest future avenues for research and help inform the design of interpretable machine learning models for gravitational wave astrophysics.},
   keywords = {Astrophysics - High Energy Astrophysical Phenomena,Computer Science - Artificial Intelligence,General Relativity and Quantum Cosmology},
   file = {/Users/Nasy/Zotero/storage/D2D7UZTZ/Safarzadeh et al. - 2022 - Interpreting a Machine Learning Model for Detectin.pdf;/Users/Nasy/Zotero/storage/I73FSN8D/2202.html}
+}
+
+@software{saiyangNasyxxEmacs20232023,
+  title = {Nasyxx/Emacs.d: 2023 03 31 Version},
+  shorttitle = {Nasyxx/Emacs.d},
+  author = {Saiyang, Na and {haasdo95} and Berserk},
+  date = {2023-04-01},
+  doi = {10.5281/zenodo.7790390},
+  url = {https://zenodo.org/record/7790390},
+  urldate = {2023-04-01},
+  abstract = {My emacs configuration},
+  organization = {{Zenodo}},
+  file = {/Users/Nasy/Zotero/storage/5QPYZLAW/Saiyang et al. - 2023 - nasyxxemacs.d 2023 03 31 version.pdf}
 }
 
 @inproceedings{sankaradasMassivelyParallelCoprocessor2009,
@@ -3523,6 +3749,17 @@
   file = {/Users/Nasy/Zotero/storage/44Q2UXEB/Wang et al. - 2019 - Heterogeneous Graph Matching Networks for Unknown .pdf}
 }
 
+@inproceedings{wangSelfConsistencyImprovesChain2023,
+  title = {Self-{{Consistency Improves Chain}} of {{Thought Reasoning}} in {{Language Models}}},
+  author = {Wang, Xuezhi and Wei, Jason and Schuurmans, Dale and Le, Quoc V. and Chi, Ed H. and Narang, Sharan and Chowdhery, Aakanksha and Zhou, Denny},
+  date = {2023-02-01},
+  url = {https://openreview.net/forum?id=1PL1NIMMrw},
+  abstract = {Chain-of-thought prompting combined with pretrained large language models has achieved encouraging results on complex reasoning tasks. In this paper, we propose a new decoding strategy, self-consistency, to replace the naive greedy decoding used in chain-of-thought prompting. It first samples a diverse set of reasoning paths instead of only taking the greedy one, and then selects the most consistent answer by marginalizing out all possible reasoning paths. Self-consistency leverages the intuition that a complex reasoning problem typically admits multiple different ways of thinking leading to its unique correct answer. Our extensive empirical evaluation shows that self-consistency boosts the performance of chain-of-thought prompting with a striking margin on a range of popular arithmetic and commonsense reasoning benchmarks, including GSM8K (+17.9\%), SVAMP (+11.0\%), AQuA (+12.2\%), StrategyQA (+6.4\%) and ARC-challenge (+3.9\%).},
+  eventtitle = {The {{Eleventh International Conference}} on {{Learning Representations}}},
+  langid = {english},
+  file = {/Users/Nasy/Zotero/storage/4358EJ8T/Wang et al. - 2023 - Self-Consistency Improves Chain of Thought Reasoni.pdf}
+}
+
 @article{wangSurveyHeterogeneousGraph2022,
   title = {A {{Survey}} on {{Heterogeneous Graph Embedding}}: {{Methods}}, {{Techniques}}, {{Applications}} and {{Sources}}},
   shorttitle = {A {{Survey}} on {{Heterogeneous Graph Embedding}}},
@@ -3555,6 +3792,28 @@
   langid = {english},
   annotation = {39 citations (Crossref) [2022-08-03]},
   file = {/Users/Nasy/Zotero/storage/92C3XFVP/Wang et al. - 2020 - A topology-based network tree for the prediction o.pdf}
+}
+
+@inproceedings{weiChainofThoughtPromptingElicits2022,
+  title = {Chain-of-{{Thought Prompting Elicits Reasoning}} in {{Large Language Models}}},
+  author = {Wei, Jason and Wang, Xuezhi and Schuurmans, Dale and Bosma, Maarten and Ichter, Brian and Xia, Fei and Chi, Ed H. and Le, Quoc V. and Zhou, Denny},
+  date = {2022-10-31},
+  url = {https://openreview.net/forum?id=_VjQlMeSB_J},
+  abstract = {We explore how generating a chain of thought---a series of intermediate reasoning steps---significantly improves the ability of large language models to perform complex reasoning. In particular, we show how such reasoning abilities emerge naturally in sufficiently large language models via a simple method called chain of thought prompting, where a few chain of thought demonstrations are provided as exemplars in prompting. Experiments on three large language models show that chain of thought prompting improves performance on a range of arithmetic, commonsense, and symbolic reasoning tasks. The empirical gains can be striking. For instance, prompting a 540B-parameter language model with just eight chain of thought exemplars achieves state of the art accuracy on the GSM8K benchmark of math word problems, surpassing even finetuned GPT-3 with a verifier.},
+  eventtitle = {Advances in {{Neural Information Processing Systems}}},
+  langid = {english},
+  file = {/Users/Nasy/Zotero/storage/3LIC3UL6/Wei et al. - 2022 - Chain-of-Thought Prompting Elicits Reasoning in La.pdf}
+}
+
+@inproceedings{weiFinetunedLanguageModels2022,
+  title = {Finetuned {{Language Models}} Are {{Zero-Shot Learners}}},
+  author = {Wei, Jason and Bosma, Maarten and Zhao, Vincent and Guu, Kelvin and Yu, Adams Wei and Lester, Brian and Du, Nan and Dai, Andrew M. and Le, Quoc V.},
+  date = {2022-01-28},
+  url = {https://openreview.net/forum?id=gEZrGCozdqR},
+  abstract = {This paper explores a simple method for improving the zero-shot learning abilities of language models. We show that instruction tuning—finetuning language models on a collection of datasets described via instructions—substantially improves zero-shot performance on unseen tasks. We take a 137B parameter pretrained language model and instruction tune it on over 60 NLP datasets verbalized via natural language instruction templates. We evaluate this instruction-tuned model, which we call FLAN, on unseen task types. FLAN substantially improves the performance of its unmodified counterpart and surpasses zero-shot 175B GPT-3 on 20 of 25 datasets that we evaluate. FLAN even outperforms few-shot GPT-3 by a large margin on ANLI, RTE, BoolQ, AI2-ARC, OpenbookQA, and StoryCloze. Ablation studies reveal that number of finetuning datasets, model scale, and natural language instructions are key to the success of instruction tuning.},
+  eventtitle = {International {{Conference}} on {{Learning Representations}}},
+  langid = {english},
+  file = {/Users/Nasy/Zotero/storage/M3PSAW4C/Wei et al. - 2022 - Finetuned Language Models are Zero-Shot Learners.pdf}
 }
 
 @inproceedings{wuGraphConvolutionalNetworks2019,
@@ -4225,6 +4484,28 @@
   keywords = {Boundary element method,nonlinear problems,particular solution},
   annotation = {12 citations (Crossref) [2022-11-04]},
   file = {/Users/Nasy/Zotero/storage/BP9Y3IR9/016892749290061H.html}
+}
+
+@inproceedings{zhouLargeLanguageModels2023,
+  title = {Large {{Language Models}} Are {{Human-Level Prompt Engineers}}},
+  author = {Zhou, Yongchao and Muresanu, Andrei Ioan and Han, Ziwen and Paster, Keiran and Pitis, Silviu and Chan, Harris and Ba, Jimmy},
+  date = {2023-02-01},
+  url = {https://openreview.net/forum?id=92gvk82DE-},
+  abstract = {By conditioning on natural language instructions, large language models (LLMs) have displayed impressive capabilities as general-purpose computers. However, task performance depends significantly on the quality of the prompt used to steer the model, and most effective prompts have been handcrafted by humans. Inspired by classical program synthesis and the human approach to prompt engineering, we propose Automatic Prompt Engineer (APE) for automatic instruction generation and selection. In our method, we treat the instruction as the "program," optimized by searching over a pool of instruction candidates proposed by an LLM in order to maximize a chosen score function. To evaluate the quality of the selected instruction, we evaluate the zero-shot performance of another LLM following the selected instruction. Experiments on 24 NLP tasks show that our automatically generated instructions outperform the prior LLM baseline by a large margin and achieve better or comparable performance to the instructions generated by human annotators on 21/24 tasks. We conduct extensive qualitative and quantitative analyses to explore the performance of APE. We show that APE-engineered prompts can be applied to steer models toward truthfulness and/or informativeness, as well as to improve few-shot learning performance by simply prepending them to standard in-context learning prompts.},
+  eventtitle = {The {{Eleventh International Conference}} on {{Learning Representations}}},
+  langid = {english},
+  file = {/Users/Nasy/Zotero/storage/C8YCNWV5/Zhou et al. - 2023 - Large Language Models are Human-Level Prompt Engin.pdf}
+}
+
+@inproceedings{zhouLeasttoMostPromptingEnables2023,
+  title = {Least-to-{{Most Prompting Enables Complex Reasoning}} in {{Large Language Models}}},
+  author = {Zhou, Denny and Schärli, Nathanael and Hou, Le and Wei, Jason and Scales, Nathan and Wang, Xuezhi and Schuurmans, Dale and Cui, Claire and Bousquet, Olivier and Le, Quoc V. and Chi, Ed H.},
+  date = {2023-02-01},
+  url = {https://openreview.net/forum?id=WZH7099tgfM},
+  abstract = {Chain-of-thought prompting has demonstrated remarkable performance on various natural language reasoning tasks. However, it tends to perform poorly on tasks which requires solving problems harder than the exemplars shown in the prompts. To overcome this challenge of easy-to-hard generalization, we propose a novel prompting strategy, least-to-most prompting. The key idea in this strategy is to break down a complex problem into a series of simpler subproblems and then solve them in sequence. Solving each subproblem is facilitated by the answers to previously solved subproblems. Our experimental results on tasks related to symbolic manipulation, compositional generalization, and math reasoning reveal that least-to-most prompting is capable of generalizing to more difficult problems than those seen in the prompts. A notable finding is that when the GPT-3 code-davinci-002 model is used with least-to-most prompting, it can solve the compositional generalization benchmark SCAN in any split (including length split) with an accuracy of at least 99\textbackslash\% using just 14 exemplars, compared to only 16\textbackslash\% accuracy with chain-of-thought prompting. This is particularly noteworthy because neural-symbolic models in the literature that specialize in solving SCAN are trained on the entire training set containing over 15,000 examples. We have included prompts for all the tasks in the Appendix.},
+  eventtitle = {The {{Eleventh International Conference}} on {{Learning Representations}}},
+  langid = {english},
+  file = {/Users/Nasy/Zotero/storage/UDIWNVD4/Zhou et al. - 2023 - Least-to-Most Prompting Enables Complex Reasoning .pdf}
 }
 
 @inproceedings{zhuHGCNHeterogeneousGraph2020,
