@@ -1,0 +1,230 @@
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:{} arch:headline
+#+options: author:t broken-links:mark c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:1 todo:t |:t
+#+title: LLM Fine-tuning
+#+date: <2023-05-19 Fri>
+#+author: Nasy
+#+email: nasyxx@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.0.50 (Org mode 9.5.5)
+#+cite_export: biblatex
+#+columns: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+
+#+setupfile: https://raw.githubusercontent.com/uta-smile/beamer-theme/master/setup.org
+
+#+latex_header_extra: \usepackage{minted}
+#+latex_header_extra: \setbeamerfont{caption}{size=\scriptsize}
+#+latex_header: \AtBeginSubsection[]{\begin{frame}<beamer>\frametitle{Section}\tableofcontents[currentsection,currentsubsection]\end{frame}}
+#+latex_header: \synctex=1
+
+#+latex: \setcounter{tocdepth}{2}
+
+* Introduction
+
+*** Introduction
+
++ Which model to choice?
++ How to fine-tune?
++ Examples
+
+*** Which
+
+#+name: fig:1
+#+caption: Elo ratings of LLMs (Timeframe: April 24 - May 8, 2023) (https://lmsys.org/blog/2023-05-10-leaderboard/)
+[[./p1.png]]
+
+*** LLaMA: Open and Efficient Foundation Language Models [cite/ft/f:@touvronLLaMAOpenEfficient2023]
+
++ The same model and architecture as GPT-2
+  - Replace ReLU with SwiGLU [PaLM] [cite/ft/f:@shazeerGLUVariantsImprove2020]
+  - Rotary Embeddings [GPTNeo] [cite/ft/f:@suRoFormerEnhancedTransformer2022]
++ Publicly available datasets
++ 7B, 13B, 33B(30B?), 65B
+
+*** LLaMA
+
+[[./p2.png]]
+
+*** Datasets
+
+[[./p3.png]]
+
+*** Alpaca
+
+[[./p4.jpg]]
+
+*** Alpaca
+
+#+begin_src json
+  [{
+      "instruction": "Rewrite the following sentence in the third person",
+      "input": "I am anxious",
+      "output": "She is anxious."
+  },
+  {
+      "instruction": "What are the three primary colors?",
+      "input": "",
+      "output": "The three primary colors are red, blue, and yellow."
+  }]
+#+end_src
+
+*** Vicuna
+
+[[./p5.png]]
+
+*** Vicuna
+
+#+begin_src json
+  [
+    {
+      "from": "human",
+      "value": "Who are you?"
+    },
+    {
+      "from": "gpt",
+      "value": "My name is Vicuna, and I'm a language model developed by Large Model Systems Organization (LMSYS)."
+    }
+  ]
+#+end_src
+
+*** Performance
+
+[[./chart.png]]
+
+* How?
+
+*** How?
+
+Follow Vicuna
+
++ Dataset
++ LLaMA model parameters
++ Delta of Vicuna parameters (optional)
++ Fine-tuning
+
+*** Datasets
+
+#+begin_src json
+  {
+    "id": "identity_1",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "Lab meeting on 5/12/2023"
+      },
+      {
+        "from": "gpt",
+        "value": "Recorder: yuzhi\n  Next week - Summary goals for summer\n  Consistent loss & Disagreement loss ..."
+      }
+    ]
+  }
+#+end_src
+
+*** LLaMA and Vicuna model parameters
+
++ Follow https://huggingface.co/docs/transformers/main/model_doc/llama
++ ~/data/public/LLaMA/download_community.sh~
+  - run with ~./download_community.sh 7B /save/path~
++ ~/data/public/LLaMA/*~
+
+*** Fine-tuning
+
+Follow: https://github.com/lm-sys/FastChat
+
+Run with:
+
+#+begin_src bash
+  torchrun --nproc_per_node=4 --master_port=20001 fastchat/train/train_mem.py \
+      --model_name_or_path ~/model_weights/llama-7b  \
+      --data_path playground/data/dummy.json \
+      --bf16 True \
+      --output_dir output \
+      --num_train_epochs 3 \
+      --per_device_train_batch_size 2 \
+      --per_device_eval_batch_size 2 \
+      --gradient_accumulation_steps 16 \
+      --evaluation_strategy "no" \
+      --save_strategy "steps" \
+      --save_steps 1200 \
+      --save_total_limit 10 \
+      --learning_rate 2e-5 \
+      --weight_decay 0. \
+      --warmup_ratio 0.03 \
+      --lr_scheduler_type "cosine" \
+      --logging_steps 1 \
+      --fsdp "full_shard auto_wrap" \
+      --fsdp_transformer_layer_cls_to_wrap 'LlamaDecoderLayer' \
+      --tf32 True \
+      --model_max_length 2048 \
+      --gradient_checkpointing True \
+      --lazy_preprocess True
+#+end_src
+
+*** Problem
+
++ The size of tensor a (65537024) must match the size of tensor b (262148096)
+  - Need more data to fit batches
++ RuntimeError: CUDA out of memory
+  - change =python3.10/site-packages/torch/distributed/fsdp/_state_dict_utils.py=
+  - =state_dict[fqn].clone().detach()= to =state_dict[fqn].cpu().clone().detach()=
+
+*** Results
+
++ Ask :: Who is the Presenter on 4/14/2023 lab meeting?
+  - Playgroud data + Lab notes
+  + Lab notes only
+
+[[./p6.png]]
+
+*** Results
+
++ Playgroud data + Lab notes with 3 Epochs
+
+[[./p7.png]]
+
+*** Results
+
++ Playgroud data + Lab notes with 50 Epochs
+
+[[./p8.png]]
+
+*** Results
+
++ Lab notes with 3 Epochs
+
+[[./p9.png]]
+
+*** Results
+
++ Lab notes with 50 Epochs
+
+[[./p10.png]]
+
+* Conclusion
+
+*** Conclusion
+
++ Which model to choice?
+  - From the rank https://lmsys.org/blog/2023-05-10-leaderboard/
++ How to fine-tune?
+  - Follow Vicuna FastChat framework
+  - Follow Alpaca instruct framework
+
+* Reference
+
+*** Reference
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+#+print_bibliography:
+
+* Examples
+
+*** Example
+
+Outside.

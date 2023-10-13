@@ -1,0 +1,181 @@
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:{} arch:headline
+#+options: author:t broken-links:mark c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:1 todo:t |:t
+#+title: LLM as Optimizers and Meta Optimizers
+#+date: <2023-07-16 Sun>
+#+author: Nasy
+#+email: nasyxx@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.0.50 (Org mode 9.5.5)
+#+cite_export: biblatex
+#+columns: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+
+#+setupfile: https://raw.githubusercontent.com/uta-smile/beamer-theme/master/setup.org
+
+#+latex_header_extra: \usepackage{minted}
+#+latex_header_extra: \setbeamerfont{caption}{size=\scriptsize}
+#+latex_header: \AtBeginSubsection[]{\begin{frame}<beamer>\frametitle{Section}\tableofcontents[currentsection,currentsubsection]\end{frame}}
+#+latex_header: \synctex=1
+
+#+latex: \setcounter{tocdepth}{2}
+
+* Large Language Model as Optimizers
+
+** Introduction
+
+*** Introduction
+
++ What is LLM as Optimizers?
+  - Optimization by PROmpting (OPRO)
+  - The goal is to find instructions that maximize the task accuracy.
++ With a variety of LLMs, we demonstrate that the best prompts optimized by OPRO outperform human-designed prompts by up to 8% on GSM8K, and by up to 50% on Big-Bench Hard tasks.
+
+** Optimization by PROmpting (OPRO)
+
+*** Optimization by PROmpting (OPRO)
+
+#+attr_latex: :height 8cm
+[[./p1.png]]
+
+*** Example
+
+#+attr_latex: :height 8cm
+[[./p2.png]]
+#+caption: Example of meta-prompt.  The blue text contains solution-score pairs; the orange text are meta-instructions.
+
+*** Motivation
+
++ Making use of natural language descriptions
+  - The main advantage of LLMs for optimization is their ability of understanding natural language, which allows people to describe their optimization tasks without formal specifications.
++ Trading off exploration and exploitation
+  - LLM should be able to exploit promising areas of the search space where good solutions are already found, while also exploring new regions of the search space so as to not miss potentially better solutions.
+
+*** Meta-Prompt Design
+
++ Optimization problem description
+  - e.g., generate a new instruction that achieves a higher accuracy
+  - e.g., the instruction should be concise and generally applicable
++ Optimization trajectory
+  - The optimization trajectory includes past solutions paired with their optimization scores, sorted in the *ascending* order.
+
+*** Solution Generation
+
++ Optimization stability.
+  - Prompt the LLM to generate multiple solutions at each optimization step, allowing the LLM to simultaneously explore multiple possibilities and quickly discover promising directions to move forward.
++ Exploration-exploitation trade-off
+  - Tune the LLM sampling temperature to balance between exploration and exploitation. A lower temperature encourages the LLM to exploit the solution space around the previously found solutions and make small adaptations, while a high temperature allows the LLM to more aggressively explore solutions that can be notably different.
+
+** Mathematical Optimization
+
+*** Mathematical Optimization
+
+#+attr_latex: :width 13cm
+[[./p3.png]]
+
+*** Mathematical Optimization
+
+#+attr_latex: :width 13cm
+[[./p4.png]]
+
+*** Limitations
+
+Limitations. We would like to note that OPRO is designed for neither outperforming the stateof-the-art gradient-based optimization algorithms for continuous mathematical optimization, nor
+surpassing the performance of specialized solvers for classical combinatorial optimization problems
+such as TSP. Instead, the goal is to demonstrate that LLMs are able to optimize different kinds
+of objective functions simply through prompting, and reach the global optimum for some smallscale problems.
+
+** Prompt Optimization
+
+*** Prompt Optimization
+
+#+attr_latex: :height 8cm
+[[./p5.png]]
+
+*** Prompt Optimization Design
+
++ Optimization problem examples.
++ Optimization trajectory
++ Meta-instructions
+
+*** Results
+
+#+attr_latex: :height 3.5cm
+[[./p6.png]]
+
+#+attr_latex: :height 3.5cm
+[[./p7.png]]
+
+*** Results
+
+#+attr_latex: :height 8cm
+[[./p8.png]]
+
+*** Results BBH
+
+See paper p15.
+
+*** Suggestions
+
+https://github.com/AGI-Edgerunners/LLM-Optimizers-Papers
+
+* Conclusion
+
+*** Conclusion
+
++ Optimization by PROmpting (OPRO)
+  - The goal is to find instructions that maximize the task accuracy.
++ Motivation
+  - Making use of natural language descriptions
+  - Trading off exploration and exploitation
++ Design
+  - Optimization problem description
+  - Optimization trajectory
+  - Meta-instructions
++ Results
+
+
+* Uncovering mesa-optimization algorithms in Transformers
+
+*** Introduction
+
++ Why?
+  - Transformers have become the dominant model in deep learning, but the reason for their superior performance is poorly understood
++ How?
+  - By reverse engineering a series of autoregressive Transformers trained on simple sequence modeling tasks, the authors reveal the gradient-based mesa-optimization algorithm that drives prediction generation.
++ New?
+  - Propose a novel self-attention layer, the mesa-layer, that explicitly and efficiently solves optimization problems specified in context
+
+*** Mesa-Optimization
+
+#+attr_latex: :width 13cm
+[[./p9.png]]
+
+*** Mesa-Optimization
+
++ An optimizer (like gradient descent, or evolution) produces another optimizer (like complex AIs, or humans). When this happens, the second optimizer is called a mesa-optimizer.
+
++ Recently, This phenomenon has been recently termed mesa-optimization: minimizing a generic autoregressive loss gives rise to a subsidiary gradient-based optimization algorithm running inside the forward pass of a Transformer.
+
+*** Mesa-Optimization
+
++ We might train a neural network to play a game using a gradient descent algorithm as our base optimizer. However, after many iterations, the neural network might develop some strategy or heuristic for playing the game. This strategy or heuristic can be thought of as a secondary optimization process or mesa optimizer.
+
++ An essential consideration is that the objective of the mesa optimizer might not perfectly align with that of the base optimizer. For instance, while the base optimizer's objective might be to have the neural network perform well on training data, the mesa optimizer might be more concerned with quickly achieving rewards without considering long-term consequences. This misalignment can lead to unpredictable or undesired behaviors.
+
+*** Mesa-Optimization
+
+#+attr_latex: :width 13cm
+[[./p10.png]]
+
+* Reference
+
+*** Reference
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+#+print_bibliography:
