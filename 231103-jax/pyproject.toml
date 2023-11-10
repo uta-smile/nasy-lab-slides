@@ -1,0 +1,24 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "Nasy", email = "nasyxx+git@gmail.com"},
+]
+dependencies = [
+    "jax>=0.4.20",
+    "numpy>=1.26.1",
+    "torch>=2.1.0",
+    "jaxlib>=0.4.20",
+    "jupyter>=1.0.0",
+    "jupyterlab>=4.0.8",
+    "naipyext[all]>=0.8.8",
+    "matplotlib>=3.8.1",
+    "flax>=0.7.5",
+    "optax>=0.1.7",
+    "jax-smi>=1.0.3",
+]
+requires-python = ">=3.11,<3.12"
+readme = "README.md"
+license = {text = "MIT"}
+

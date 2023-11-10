@@ -1,0 +1,863 @@
+% Created 2023-11-10 Fri 15:54
+% Intended LaTeX compiler: xelatex
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{nicefrac}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[colorlinks,unicode,linkcolor=violet,anchorcolor=BlueViolet,citecolor=YellowOrange,filecolor=black,urlcolor=Aquamarine]{hyperref}
+\author{Nasy}
+\date{Jul 16, 2023}
+\title{JAX -- Now and Future}
+\hypersetup{
+ pdfauthor={Nasy},
+ pdftitle={JAX -- Now and Future},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.0.50 (Org mode 9.5.5)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+\section{Introduction}
+\label{sec:org0383752}
+
+\subsection{What is JAX?}
+\label{sec:org3e21860}
+
+\subsubsection{Acronym}
+\label{sec:org8ac9489}
+
+\begin{description}
+\item[{Originally}] Just After eXecution
+\item[{Now}] JAX is Autograd (automatic obtaining of the gradient function
+through differentiation of a function) an XLA (accelerated linear
+algebra).
+\item[{Fact}] JAX is JAX
+\end{description}
+
+ref: \url{https://github.com/google/jax/discussions/9019}
+\subsubsection{Design}
+\label{sec:orgcbf11fa}
+
+\begin{itemize}
+\item Follow \texttt{numpy} as closely as possible
+\item Works with various existing frameworks (PyTorch, Tensorflow)
+\item Immutable and purely functional
+\item Asynchronous dispatch
+\item Core: \texttt{jit}, \texttt{vmap}, \texttt{grad}, \texttt{pmap}
+\end{itemize}
+\subsection{Who use JAX?}
+\label{sec:org180bc9b}
+
+\begin{itemize}
+\item Lab
+\begin{itemize}
+\item Google Brain \& Deepmind
+\item Google Research
+\end{itemize}
+\item Models
+\begin{itemize}
+\item ViT
+\item Big Vision
+\item AlphaFold
+\item MLP-Mixer
+\item T5X
+\item PaLM
+\item \ldots{}
+\end{itemize}
+\item Awesome-jax: \url{https://github.com/n2cholas/awesome-jax}
+\end{itemize}
+\subsection{Basic Usage}
+\label{sec:org09dd7e7}
+
+\subsubsection{JAX and NumPy}
+\label{sec:orgfad4f47}
+
+\begin{enumerate}
+\item JAX is accelerated NumPy
+\label{sec:org9960215}
+
+\begin{minted}[]{python}
+import jax
+import jax.numpy as jnp
+import numpy as np
+from rich import print
+
+print("numpy:", np.asarray([1, 2, 3]))
+print("jax:", jnp.asarray([1, 2, 3]))
+\end{minted}
+
+\begin{minted}[]{python}
+print("jax->numpy:", np.std(jnp.arange(10)))
+print("numpy->jax:", jnp.std(np.arange(10)))
+\end{minted}
+\item Difference
+\label{sec:org2fd820a}
+
+JAX is designed to be functional, as in functional programming.
+
+\begin{minted}[]{python}
+x = np.arange(10)
+jx = jnp.arange(10)
+print(f"Original: {x=}")
+x[0] = 1
+print(f"Inplace replace: {x=}")
+
+# cannot
+# jx[0] = 1
+jx = jx.at[0].set(1)
+
+
+def in_place_set(x, i, v):
+    x[i] = v
+    return x
+
+in_place_set(x, 2, 10)
+
+print(f"Inplace replace 2: {x=}")
+\end{minted}
+\end{enumerate}
+\subsubsection{JIT}
+\label{sec:org35dc3f9}
+
+Using a just-in-time (JIT) compilation decorator, sequences of operations can be optimized together and run at once.
+
+ref: \url{https://jax.readthedocs.io/en/latest/\_autosummary/jax.jit.html\#jax.jit}
+
+ref2, tutorial: \url{https://jax.readthedocs.io/en/latest/jax-101/02-jitting.html}
+
+Here is an example to JIT a function.
+
+\begin{minted}[]{python}
+def func(x: Array) -> Array:
+  ...
+
+jit_func = jax.jit(func)
+
+# or
+
+@jax.jit
+def func(x: Array) -> Array:
+  ...
+\end{minted}
+
+In most of time, you only need add the jit funciton in the outer most function.
+
+\begin{minted}[]{python}
+import jax
+import jax.numpy as jnp
+import rich
+import time
+
+def model(params, x):
+  return params["w"] * x + params["b"]
+
+def loss_function(params, x, y):
+  return ((model(params, x) - y) ** 2).mean()
+
+def train_step(params, x, y, lr):
+  grads = jax.grad(loss_function)(params, x, y)
+  return {"w": params["w"] - lr * grads["w"],
+          "b": params["b"] - lr * grads["b"]}
+
+def train(x, y, lr, num_steps):
+  params = {"w": 0.0, "b": 0.0}
+  for i in range(num_steps):
+    params = train_step(params, x, y, lr)
+  return params
+
+
+train_step_jit = jax.jit(train_step)
+
+
+def train_jit(x, y, lr, num_steps):
+  params = {"w": 0.0, "b": 0.0}
+  for i in range(num_steps):
+    params = train_step_jit(params, x, y, lr)
+  return params
+
+
+xs = jnp.array([1, 2, 3, 4, 5]) / 2
+ys = jnp.array([2, 4, 6, 8, 10]) / 2
+
+t1 = time.time()
+p1 = train(xs, ys, 0.01, 50)
+t2 = time.time()
+
+t3 = time.time()
+p2 = train_jit(xs, ys, 0.01, 50)
+t4 = time.time()
+
+
+rich.print("no jit:", p1, t2 - t1)
+rich.print("jit:", p2, t4 - t3)
+\end{minted}
+\subsubsection{autograd}
+\label{sec:orgc32fa7d}
+
+JAX use \texttt{jax.grad} and \texttt{jax.value\_and\_grad} to get the gradient of a function.
+
+\begin{minted}[]{python}
+def f(x):
+  return x ** 3
+
+print(jax.grad(f)(10.0))  # 3x^2
+print(jax.value_and_grad(f)(10.0))  # (x^3, 3x^2)
+print(jax.grad(jax.grad(f))(10.0))  # (3x^2)' = 6x
+\end{minted}
+
+You can also do partial differentiation with some structure data in JAX.
+
+\begin{minted}[]{python}
+def f(xy):
+  return xy["x"] ** xy["y"]
+
+x = jnp.array(2.)
+y = jnp.array(3.)
+
+print(jax.value_and_grad(f)({"x": x, "y": y}))
+# Higher order derivatives
+print(jax.hessian(f)({"x": x, "y": y}))
+\end{minted}
+\subsubsection{vmap and pmap}
+\label{sec:org2791a97}
+
+JAX for single-program, multiple-data (SPMD).
+
+\texttt{jax.vmap(f)(x)}, where the shape of \texttt{x} is \texttt{batch\_size, ...}
+
+Here is an example for \texttt{vmap}
+
+\begin{minted}[]{python}
+# we want to calculate the gradient for x and y, however, our x and y is batched.
+@jax.grad
+def f2(xy):
+  x, y = xy
+  return x ** y
+
+xs = jnp.array([2., 2.])
+ys = jnp.array([3., 3.])
+
+# for-loop
+grads = []
+for x, y in zip(xs, ys):
+  grads.append(f2((x, y)))
+print("For-loop:", grads)
+
+# vmap
+vmap_grads = jax.vmap(f2)
+print("vmap:", vmap_grads((xs, ys)))
+\end{minted}
+
+How about \texttt{pmap}?
+
+\texttt{pmap} is like \texttt{vmap}, but parallel evaluate the function on different devices.
+
+\texttt{jax.pmap(f)(x)}, where the shape of \texttt{x} is \texttt{devices, ...}
+
+And you can use both \texttt{pmap} and \texttt{vmap}, like \texttt{jax.pmap(jax.vmap(f))} the shape will be \texttt{devices, batch\_size, ...}
+\subsubsection{Performance}
+\label{sec:org701dd44}
+
+Here is a comparison between numpy, jax and pytorch.
+
+\begin{minted}[]{python}
+import time
+import torch
+np.random.seed(42)
+
+arr = np.random.random(1000000).reshape(-1, 1000).astype("float32") * 10
+jrr = jnp.array(arr)
+
+def _func(x):
+  return x @ x @ x @ x @ x @ x @ x @ x @ x @ x @ x
+
+def func(x):
+  return (_func(x) * _func(x) + _func(x) * _func(x)) / _func(x)
+
+import time
+
+# numpy time
+t1 = time.time()
+func(arr)
+t2 = time.time()
+
+# jax time
+t3 = time.time()
+func(jrr).block_until_ready()
+t4 = time.time()
+
+# jax jit compile
+jit_func = jax.jit(func)
+jit_func(jrr).block_until_ready()
+
+# jax jit time
+t5 = time.time()
+jit_func(jrr).block_until_ready()
+t6 = time.time()
+
+trr = torch.from_numpy(arr)
+
+# torch time
+func(trr)
+t7 = time.time()
+func(trr)
+t8 = time.time()
+
+print("Numpy time: ", t2 - t1)
+print("Jax time: ", t4 - t3)
+print("Jax jit time: ", t6 - t5)
+print("Torch time: ", t8 - t7)
+\end{minted}
+\section{JAX vs PyTorch in a Pipeline}
+\label{sec:org9c3562a}
+
+\subsection{Keras}
+\label{sec:org86c6d78}
+
+Those who have previously used TensorFlow should be quite familiar with Keras. Currently, Keras has reached version 3.0 and includes the 'keras-core' library, which allows for very easy switching between JAX, TensorFlow, and PyTorch.
+
+\begin{minted}[]{sh}
+# run with jax
+KERAS_BACKEND=jax python train.py
+
+# run with torch
+KERAS_BACKEND=torch python train.py
+
+# run with tensorflow
+KERAS_BACKEND=tensorflow python train.py
+\end{minted}
+\subsection{Install and run}
+\label{sec:org8282286}
+
+Install
+
+\begin{minted}[]{sh}
+# jax
+pip install --upgrade "jaxlib[cuda12_pip]" "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+# jax nn library
+pip install flax
+
+# torch
+pip install torch
+\end{minted}
+
+Run.  As far as I know, both \texttt{JAX} and \texttt{PyTorch} now ship with nvidia-cuda-toolkits, so you do not need to setup \texttt{LD\_LIBRARY\_PATH} anymore.
+
+\begin{minted}[]{sh}
+# jax
+python train.py
+
+# torch
+python train.py
+\end{minted}
+\subsection{Load data}
+\label{sec:orga4151ce}
+
+JAX does not have built-in data loading utilities, so we can use both \texttt{tensorflow} or \texttt{torch} dataloader to load the dataset.
+
+Here is a example for \texttt{torch} dataloader.
+
+\begin{minted}[]{python}
+import jax.numpy as jnp
+from jax.tree_util import tree_map
+from torch.utils import data
+
+def collate_fn(x):
+  return tree_map(jnp.asarray, data.default_collate(batch))
+
+data_generator = Dataloader(
+    dataset,
+    collate_fn=collate_fn,
+    batch_size=128,
+    shuffle=False,
+    num_workers=2,
+)
+\end{minted}
+
+And you can find others in the \texttt{jax} document.  \url{https://jax.readthedocs.io/en/latest/advanced\_guide.html}
+\subsection{Define and initialize model}
+\label{sec:org874c6d3}
+
+\subsubsection{PyTorch}
+\label{sec:orgc788179}
+
+\begin{minted}[]{python}
+import torch
+from torch import nn
+
+class TM(nn.Module):
+  """Torch Model."""
+
+  def __init__(self, in_=100, h1=300, h2=200, h3=100):
+    super().__init__()
+    self.l1 = nn.Linear(in_, h1)
+    self.bn1 = nn.BatchNorm1d(h1)
+    self.dp1 = nn.Dropout(0.5)
+    self.l2 = nn.Linear(h1, h2)
+    self.l3 = nn.Linear(h2, h3)
+    self.out = nn.Linear(h3, 1)
+
+
+  def forward(self, x):
+    x = torch.relu(self.l1(x))
+    x = self.bn1(x)
+    x = self.dp1(x)
+    x = torch.relu(self.l2(x))
+    x = torch.relu(self.l3(x))
+    return self.out(x)
+
+tm = TM()
+print(tm)
+rich.print(jax.tree_map(lambda x: x.shape, dict(tm.state_dict())))
+\end{minted}
+\subsubsection{JAX w/ flax}
+\label{sec:org91228eb}
+
+\begin{minted}[]{python}
+import jax
+import jax.numpy as jnp
+from flax import linen
+
+class JM(linen.Module):
+    """JAX and flax model."""
+
+    h1 = 300
+    h2 = 200
+    h3 = 100
+
+    @linen.compact
+    def __call__(self, x, training=True):
+        x = linen.Dense(self.h1)(x)
+        x = linen.BatchNorm()(x, use_running_average=not training)
+        x = linen.Dropout(0.2)(x, deterministic=not training)
+        x = jax.nn.relu(x)
+        x = linen.Dense(self.h2)(x)
+        x = jax.nn.relu(x)
+        x = linen.Dense(self.h3)(x)
+        x = jax.nn.relu(x)
+        x = linen.Dense(1)(x)
+        return x
+
+
+jm = JM()
+variables = jm.init(
+    jax.random.key(42),  # random key
+    jnp.ones((1, 100)),  # input (Batch, Features)
+    training=False,  # training mode
+)
+
+rich.print(jax.tree_map(lambda x: x.shape, variables))
+print(jm.tabulate(jax.random.key(42), jnp.ones((1, 100)), training=False,
+                  compute_flops=True, compute_vjp_flops=True))
+\end{minted}
+\subsection{TrainState and Train loop}
+\label{sec:org17f69eb}
+
+Usually, we need to store the state of the model, like the parameters, the optimizer, the learning rate scheduler, etc.
+\subsubsection{PyTorch}
+\label{sec:org903e14a}
+
+\begin{minted}[]{python}
+import torch
+import torch.nn as nn
+from typing import NamedTuple
+
+
+def train_loop(conf: dict, dataloader):
+  """The pytorch training loop."""
+  model = TM(conf)
+
+  loss_fn = nn.CrossEntropyLoss()
+
+  optim = torch.optim.Adam(model.parameters(), lr=conf["lr"])
+
+  state = TrainState(
+    loss=0,
+    state=model.state_dict(),
+    optim_state=optim.state_dict(),
+    step=0,
+    metric=0,
+  )
+
+  model.to("cuda")
+
+  def train_step(batch, ys):
+    batch, ys = batch.to("cuda"), ys.to("cuda")
+
+    # forward
+    loss = loss_fn(model(batch), ys)
+    # grad
+    loss.backward()
+    # update params
+    optim.step()
+    optim.zero_grad()
+
+    return loss
+
+
+  for e in range(conf["epochs"]):
+    model.train()
+    for i, (batch, ys) in dataloader:
+      loss = train_step(batch, ys)
+
+      # eval
+      model.eval()
+      metric = ...  # compute metric
+
+      state = state._replace(
+        loss=loss.item(),
+        state=model.state_dict(),
+        optim_state=optim.state_dict(),
+        step=state.step + 1,
+        metric=metric,
+      )
+
+  # save
+  torch.save(state, "model.pt")
+\end{minted}
+\subsubsection{JAX}
+\label{sec:org157b54a}
+
+\begin{minted}[]{python}
+import jax
+import jax.numpy as jnp
+import optax
+from flax.core.scope import Collection
+from flax.training import train_state
+import pickle
+
+class TrainState(train_state.TrainState):
+    """Training states."""
+
+    # default
+    # apply_fn  # the model forward function
+    # params
+    # tx  # optim
+    # step  # training step
+
+    # our custom
+    batch_stats: Collection
+    # our metrics
+    loss: jax.Array
+    metric: jax.Array
+
+
+def create_train_state(conf: dict):
+    """Create initial training state."""
+    model = JM(conf)
+
+    @jax.jit
+    def init() -> Collection:
+        return model.init(jax.random.key(42), jnp.ones((1, 100)), training=False)
+
+    variables = init()
+
+    return TrainState.create(
+        apply_fn=model.apply,
+        params=variables["params"],
+        tx=optax.adamw(conf["lr"]),
+        model_state=Collection({}),
+        loss=jnp.inf,
+        metric=0.0,
+        batch_stats=variables["batch_stats"],
+        step=0,
+    )
+
+
+@jax.jit
+def train_step(state, rng, batch, ys):
+
+  @jax.jit  # optional since we already have jit outside train_step
+  @jax.value_and_grad
+  def lossfn(params):
+    return optax.cross_entropy_loss(
+        state.apply_fn(
+            {
+                "params": state.params,
+                "batch_stats": state.batch_stats,
+            },
+            batch,
+            training=True,
+            rngs={"dropout": rng},
+            mutable=["batch_stats"],
+        ),
+        ys,
+    ).mean()
+
+  loss, grad = lossfn(state.params)
+  # the step, params, tx_states will automatically be updated
+  return state.apply_gradients(grad=grad, loss=loss)
+
+
+@jax.jit
+def eval_step(state, batch, ys):
+
+  value = state.apply_fn(
+    {"params": state.params, "batch_stats": state.batch_stats},
+    batch,
+    training=False,
+  )
+  metric = ...
+  return metric
+
+
+def train_loop(conf: dict, dataloader):
+    """Training loop."""
+    state = create_train_state(conf)
+
+    for epoch in range(conf["epochs"]):
+        for batch, ys in dataloader:
+            state = train_step(state, batch)
+
+            # eval
+            metric = eval_step(state, batch, ys)
+            state = state.replace(metric=metric)
+
+    # save
+    with open("model.pkl", "wb") as f:
+      pickle.dump({"params": state.params,
+                   "tx": state.tx,
+                   "batch_stats": state.batch_stats,
+                   "metric": state.metric},
+                  f)
+\end{minted}
+\section{Parallel and Distributed Computing}
+\label{sec:orga00c272}
+
+\subsection{Resource}
+\label{sec:org2bfab64}
+
+\begin{itemize}
+\item Flax tutorial: \url{https://flax.readthedocs.io/en/latest/guides/parallel\_training/index.html}
+\item JAX tutorial: \url{https://jax.readthedocs.io/en/latest/notebooks/Distributed\_arrays\_and\_automatic\_parallelization.html}
+\end{itemize}
+\subsection{Transfer data between devices}
+\label{sec:orgbdfc8be}
+
+\begin{minted}[]{python}
+import jax
+import jax.numpy as jnp
+import os
+
+os.environ["XLA_FLAGS"] = "--xla_force_host_platform_device_count=8"
+
+x = jnp.ones((8, 8))
+
+#1. check devices
+print("global devices:", jax.devices())
+print("local devices:", jax.local_devices())
+# you can specify the device type
+print("cpu devices:", jax.devices("cpu"))
+
+#2. check the device of x
+print("x devices:", x.devices())
+
+# Put x to a specific device
+y = jax.device_put(x, jax.devices("cpu")[1])
+# Get y back to host (numpy array)
+z = jax.device_get(y)
+print("x devices:", x.devices())
+print("y devices:", y.devices())
+print("z type:", type(z))
+\end{minted}
+\subsection{Use \texttt{pmap} to train with data parallel.}
+\label{sec:org39d0cb6}
+
+\begin{minted}[]{python}
+import jax
+from functools import partial
+
+
+@partial(jax.pmap, static_broadcasted_argnums=(0,))
+def create_train_state(conf: dict):
+    """Create initial training state."""
+    ...
+
+
+@jax.pmap
+def train_step(state, rng, batch, ys):
+    ...
+
+
+@jax.jit
+def eval_step(state, batch, ys):
+
+  preds = state.apply_fn(  # (batch, 1)
+    {"params": state.params, "batch_stats": state.batch_stats},
+    batch,
+    training=False,
+  )
+  logits = jax.nn.sigmoid(preds)
+  acc = jnp.mean((logits > 0.5) == ys)
+  return acc
+
+
+@partial(jax.pmap, axis_name="batch")
+def eval_step_pmap(state, batch, ys):
+
+  preds = state.apply_fn(  # (devices, batch, 1)
+    {"params": state.params, "batch_stats": state.batch_stats},
+    batch,
+    training=False,
+  )
+  logits = jax.nn.sigmoid(preds)
+  pacc = jax.lax.pmean((logits > 0.5) == ys, axis_name="batch")
+  acc = jnp.mean(pacc)
+  return acc
+\end{minted}
+\subsection{Use jit with sharding.}
+\label{sec:orgbe40ff0}
+
+sharding, split a large array into smaller pieces, and each piece is stored on a different device.
+\subsubsection{Basic}
+\label{sec:org05c8698}
+
+\begin{minted}[]{python}
+import jax
+import jax.numpy as jnp
+from jax.experimental import mesh_utils
+from jax.sharding import PositionalSharding, NamedSharding
+import numpy as np
+
+import os
+
+os.environ["XLA_FLAGS"] = "--xla_force_host_platform_device_count=8"
+
+dc = jax.device_count()
+print(f"we have {dc} devices.")
+
+# If you want to track gpu usage
+# install go
+# pip install jax-smi
+# from jax_smi import initialise_tracking
+# initialise_tracking()
+
+# batch feature (batch, feature), here batch = Nxdevice_count
+xs = jax.random.normal(jax.random.key(42), (8*dc*64, 8*dc*64))
+
+# dmesh
+dmesh = mesh_utils.create_device_mesh((dc,))
+# or
+dmesh = np.asarray(jax.devices()).reshape((dc,))
+
+sharding = PositionalSharding(dmesh)
+
+# since xs shappe is (batch, feature)
+sharding = sharding.reshape((-1, 1))
+# put jax across devices
+print(xs.devices())
+xs = jax.device_put(xs, sharding)
+print(xs.devices())
+
+jax.debug.visualize_array_sharding(xs)
+\end{minted}
+\subsubsection{Different shardings}
+\label{sec:orgb51b3f0}
+
+\begin{minted}[]{python}
+xs = jax.device_put(xs, sharding.reshape(1, -1))
+
+jax.debug.visualize_array_sharding(xs)
+\end{minted}
+
+\begin{minted}[]{python}
+xs = jax.device_put(xs, sharding.reshape(dc // 2, -1))
+jax.debug.visualize_array_sharding(xs)
+\end{minted}
+\subsubsection{Performance}
+\label{sec:org2471f3d}
+
+\begin{minted}[]{python}
+xs = jax.device_put(xs, sharding.reshape(dc // 2, -1))
+xsc0 = jax.device_put(xs, jax.devices()[0])
+import time
+
+cos = jax.jit(jnp.cos)
+cos(xsc0).block_until_ready()
+cos(xs).block_until_ready()
+
+t1 = time.time()
+for _ in range(20):
+  r = cos(xsc0).block_until_ready()
+t2 = time.time()
+
+t3 = time.time()
+for _ in range(20):
+  rr = cos(xs).block_until_ready()
+t4 = time.time()
+
+cos = jax.pmap(jnp.cos)
+
+pxs = xsc0.reshape(dc, -1, xsc0.shape[-1])
+
+t5 = time.time()
+for _ in range(20):
+  rrr = cos(pxs).block_until_ready()
+t6 = time.time()
+
+print("In single device: ", t2 - t1)
+print("In multi device: ", t4 - t3)
+print("In multi device pmap: ", t6 - t5)
+\end{minted}
+\subsubsection{Use sharding with \texttt{jit}}
+\label{sec:orgee20554}
+
+\begin{minted}[]{python}
+xs = jax.device_put(xs, sharding.reshape(dc, -1))
+
+def f(x):
+  return jnp.sin(x)
+
+
+# in with None, out with (dc, 1)
+
+print("before:")
+jax.debug.visualize_array_sharding(xs)
+
+out = jax.jit(f, in_shardings=sharding.reshape(dc, -1), out_shardings=sharding.reshape(-1, dc))(xs)
+print("after:")
+jax.debug.visualize_array_sharding(out)
+\end{minted}
+\section{JAX echosystem}
+\label{sec:orgad0dd02}
+
+\begin{itemize}
+\item JAX
+\item NN library
+\begin{itemize}
+\item Flax  (Google)
+\item Haiku  (Deepmind)
+\item Trax  (Google brain)
+\item HuggingFace (Flax)
+\item keras
+\item jraph  (GNN)
+\item RLax (Deepmind, RL)
+\item Coax (Microsoft, RL)
+\end{itemize}
+\item Optimizer
+\begin{itemize}
+\item jaxopt
+\item optax
+\end{itemize}
+\item Others
+\begin{itemize}
+\item orbax-checkpoint
+\item jax-md  (molecular dynamics)
+\item mpi4jax
+\end{itemize}
+\end{itemize}
+\end{document}

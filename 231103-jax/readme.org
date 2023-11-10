@@ -1,0 +1,1094 @@
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:{} arch:headline
+#+options: author:t broken-links:mark c:nil creator:nil
+#+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+options: timestamp:t title:t toc:1 todo:t |:t
+#+title: JAX -- Now and Future
+#+date: <2023-07-16 Sun>
+#+author: Nasy
+#+email: nasyxx@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.0.50 (Org mode 9.5.5)
+
+* Introduction
+
+** What is JAX?
+
+*** Acronym
+
++ Originally :: Just After eXecution
++ Now :: JAX is Autograd (automatic obtaining of the gradient function
+  through differentiation of a function) an XLA (accelerated linear
+  algebra).
++ Fact :: JAX is JAX
+
+ref: https://github.com/google/jax/discussions/9019
+
+*** Design
+
++ Follow =numpy= as closely as possible
++ Works with various existing frameworks (PyTorch, Tensorflow)
++ Immutable and purely functional
++ Asynchronous dispatch
++ Core: ~jit~, ~vmap~, ~grad~, ~pmap~
+
+** Who use JAX?
+
++ Lab
+  - Google Brain & Deepmind
+  - Google Research
++ Models
+  - ViT
+  - Big Vision
+  - AlphaFold
+  - MLP-Mixer
+  - T5X
+  - PaLM
+  - ...
++ Awesome-jax: https://github.com/n2cholas/awesome-jax
+
+** Basic Usage
+
+*** JAX and NumPy
+
+**** JAX is accelerated NumPy
+
+#+BEGIN_SRC python :session jax :results output
+  import jax
+  import jax.numpy as jnp
+  import numpy as np
+  from rich import print
+
+  print("numpy:", np.asarray([1, 2, 3]))
+  print("jax:", jnp.asarray([1, 2, 3]))
+#+END_SRC
+
+#+RESULTS:
+: numpy: [1 2 3]
+: jax: [1 2 3]
+
+#+begin_src python :session jax :results output
+  print("jax->numpy:", np.std(jnp.arange(10)))
+  print("numpy->jax:", jnp.std(np.arange(10)))
+#+end_src
+
+#+RESULTS:
+: jax->numpy: 2.8722813
+: numpy->jax: 2.8722813
+
+**** Difference
+
+JAX is designed to be functional, as in functional programming.
+
+#+begin_src python :session jax :results output
+  x = np.arange(10)
+  jx = jnp.arange(10)
+  print(f"Original: {x=}")
+  x[0] = 1
+  print(f"Inplace replace: {x=}")
+
+  # cannot
+  # jx[0] = 1
+  jx = jx.at[0].set(1)
+
+
+  def in_place_set(x, i, v):
+      x[i] = v
+      return x
+
+  in_place_set(x, 2, 10)
+
+  print(f"Inplace replace 2: {x=}")
+#+end_src
+
+#+RESULTS:
+: Original: x=array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+: Inplace replace: x=array([1, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+: Inplace replace 2: x=array([ 1,  1, 10,  3,  4,  5,  6,  7,  8,  9])
+
+*** JIT
+
+Using a just-in-time (JIT) compilation decorator, sequences of operations can be optimized together and run at once.
+
+ref: https://jax.readthedocs.io/en/latest/_autosummary/jax.jit.html#jax.jit
+
+ref2, tutorial: https://jax.readthedocs.io/en/latest/jax-101/02-jitting.html
+
+Here is an example to JIT a function.
+
+#+begin_src  python
+  def func(x: Array) -> Array:
+    ...
+
+  jit_func = jax.jit(func)
+
+  # or
+
+  @jax.jit
+  def func(x: Array) -> Array:
+    ...
+#+end_src
+
+In most of time, you only need add the jit funciton in the outer most function.
+
+#+begin_src python  :results output
+  import jax
+  import jax.numpy as jnp
+  import rich
+  import time
+
+  def model(params, x):
+    return params["w"] * x + params["b"]
+
+  def loss_function(params, x, y):
+    return ((model(params, x) - y) ** 2).mean()
+
+  def train_step(params, x, y, lr):
+    grads = jax.grad(loss_function)(params, x, y)
+    return {"w": params["w"] - lr * grads["w"],
+            "b": params["b"] - lr * grads["b"]}
+
+  def train(x, y, lr, num_steps):
+    params = {"w": 0.0, "b": 0.0}
+    for i in range(num_steps):
+      params = train_step(params, x, y, lr)
+    return params
+
+
+  train_step_jit = jax.jit(train_step)
+
+
+  def train_jit(x, y, lr, num_steps):
+    params = {"w": 0.0, "b": 0.0}
+    for i in range(num_steps):
+      params = train_step_jit(params, x, y, lr)
+    return params
+
+
+  xs = jnp.array([1, 2, 3, 4, 5]) / 2
+  ys = jnp.array([2, 4, 6, 8, 10]) / 2
+
+  t1 = time.time()
+  p1 = train(xs, ys, 0.01, 50)
+  t2 = time.time()
+
+  t3 = time.time()
+  p2 = train_jit(xs, ys, 0.01, 50)
+  t4 = time.time()
+
+
+  rich.print("no jit:", p1, t2 - t1)
+  rich.print("jit:", p2, t4 - t3)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+no jit:
+{
+    'w': Array(1.5326817, dtype=float32, weak_type=True),
+    'b': Array(0.73161584, dtype=float32, weak_type=True)
+}
+0.21137738227844238
+jit:
+{
+    'b': Array(0.73161584, dtype=float32, weak_type=True),
+    'w': Array(1.5326817, dtype=float32, weak_type=True)
+}
+0.015442848205566406
+#+end_example
+
+*** autograd
+
+JAX use =jax.grad= and =jax.value_and_grad= to get the gradient of a function.
+
+#+begin_src python :session jax :results output
+  def f(x):
+    return x ** 3
+
+  print(jax.grad(f)(10.0))  # 3x^2
+  print(jax.value_and_grad(f)(10.0))  # (x^3, 3x^2)
+  print(jax.grad(jax.grad(f))(10.0))  # (3x^2)' = 6x
+#+end_src
+
+#+RESULTS:
+: 300.0
+: (
+:     Array(1000., dtype=float32, weak_type=True),
+:     Array(300., dtype=float32, weak_type=True)
+: )
+: 60.0
+
+You can also do partial differentiation with some structure data in JAX.
+
+#+begin_src  python :session jax :results output
+  def f(xy):
+    return xy["x"] ** xy["y"]
+
+  x = jnp.array(2.)
+  y = jnp.array(3.)
+
+  print(jax.value_and_grad(f)({"x": x, "y": y}))
+  # Higher order derivatives
+  print(jax.hessian(f)({"x": x, "y": y}))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+(
+    Array(8., dtype=float32, weak_type=True),
+    {
+        'x': Array(12., dtype=float32, weak_type=True),
+        'y': Array(5.5451775, dtype=float32, weak_type=True)
+    }
+)
+{
+    'x': {
+        'x': Array(12., dtype=float32, weak_type=True),
+        'y': Array(12.317766, dtype=float32, weak_type=True)
+    },
+    'y': {
+        'x': Array(12.317766, dtype=float32, weak_type=True),
+        'y': Array(3.843624, dtype=float32, weak_type=True)
+    }
+}
+#+end_example
+
+*** vmap and pmap
+
+JAX for single-program, multiple-data (SPMD).
+
+~jax.vmap(f)(x)~, where the shape of =x= is =batch_size, ...=
+
+Here is an example for =vmap=
+
+#+begin_src python :session jax :results output
+  # we want to calculate the gradient for x and y, however, our x and y is batched.
+  @jax.grad
+  def f2(xy):
+    x, y = xy
+    return x ** y
+
+  xs = jnp.array([2., 2.])
+  ys = jnp.array([3., 3.])
+
+  # for-loop
+  grads = []
+  for x, y in zip(xs, ys):
+    grads.append(f2((x, y)))
+  print("For-loop:", grads)
+
+  # vmap
+  vmap_grads = jax.vmap(f2)
+  print("vmap:", vmap_grads((xs, ys)))
+#+end_src
+
+#+RESULTS:
+: For-loop:
+: [
+:     (Array(12., dtype=float32), Array(5.5451775, dtype=float32)),
+:     (Array(12., dtype=float32), Array(5.5451775, dtype=float32))
+: ]
+: vmap:
+: (Array([12., 12.], dtype=float32), Array([5.5451775, 5.5451775], dtype=float32))
+
+How about =pmap=?
+
+=pmap= is like =vmap=, but parallel evaluate the function on different devices.
+
+~jax.pmap(f)(x)~, where the shape of =x= is =devices, ...=
+
+And you can use both =pmap= and =vmap=, like ~jax.pmap(jax.vmap(f))~ the shape will be =devices, batch_size, ...=
+
+*** Performance
+
+Here is a comparison between numpy, jax and pytorch.
+
+#+begin_src python :session jax :results output
+  import time
+  import torch
+  np.random.seed(42)
+
+  arr = np.random.random(1000000).reshape(-1, 1000).astype("float32") * 10
+  jrr = jnp.array(arr)
+
+  def _func(x):
+    return x @ x @ x @ x @ x @ x @ x @ x @ x @ x @ x
+
+  def func(x):
+    return (_func(x) * _func(x) + _func(x) * _func(x)) / _func(x)
+
+  import time
+
+  # numpy time
+  t1 = time.time()
+  func(arr)
+  t2 = time.time()
+
+  # jax time
+  t3 = time.time()
+  func(jrr).block_until_ready()
+  t4 = time.time()
+
+  # jax jit compile
+  jit_func = jax.jit(func)
+  jit_func(jrr).block_until_ready()
+
+  # jax jit time
+  t5 = time.time()
+  jit_func(jrr).block_until_ready()
+  t6 = time.time()
+
+  trr = torch.from_numpy(arr)
+
+  # torch time
+  func(trr)
+  t7 = time.time()
+  func(trr)
+  t8 = time.time()
+
+  print("Numpy time: ", t2 - t1)
+  print("Jax time: ", t4 - t3)
+  print("Jax jit time: ", t6 - t5)
+  print("Torch time: ", t8 - t7)
+#+end_src
+
+#+RESULTS:
+: Numpy time:  0.9135739803314209
+: Jax time:  0.41330528259277344
+: Jax jit time:  0.03363919258117676
+: Torch time:  0.058039188385009766
+
+* JAX vs PyTorch in a Pipeline
+
+** Keras
+
+Those who have previously used TensorFlow should be quite familiar with Keras. Currently, Keras has reached version 3.0 and includes the 'keras-core' library, which allows for very easy switching between JAX, TensorFlow, and PyTorch.
+
+#+begin_src sh
+  # run with jax
+  KERAS_BACKEND=jax python train.py
+
+  # run with torch
+  KERAS_BACKEND=torch python train.py
+
+  # run with tensorflow
+  KERAS_BACKEND=tensorflow python train.py
+#+end_src
+
+** Install and run
+
+Install
+
+#+begin_src sh
+  # jax
+  pip install --upgrade "jaxlib[cuda12_pip]" "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+  # jax nn library
+  pip install flax
+
+  # torch
+  pip install torch
+#+end_src
+
+Run.  As far as I know, both =JAX= and =PyTorch= now ship with nvidia-cuda-toolkits, so you do not need to setup =LD_LIBRARY_PATH= anymore.
+
+#+begin_src sh
+  # jax
+  python train.py
+
+  # torch
+  python train.py
+#+end_src
+
+** Load data
+
+JAX does not have built-in data loading utilities, so we can use both =tensorflow= or =torch= dataloader to load the dataset.
+
+Here is a example for =torch= dataloader.
+
+#+begin_src python
+  import jax.numpy as jnp
+  from jax.tree_util import tree_map
+  from torch.utils import data
+
+  def collate_fn(x):
+    return tree_map(jnp.asarray, data.default_collate(batch))
+
+  data_generator = Dataloader(
+      dataset,
+      collate_fn=collate_fn,
+      batch_size=128,
+      shuffle=False,
+      num_workers=2,
+  )
+#+end_src
+
+And you can find others in the =jax= document.  https://jax.readthedocs.io/en/latest/advanced_guide.html
+
+** Define and initialize model
+
+*** PyTorch
+
+#+begin_src python :session jax :results output
+  import torch
+  from torch import nn
+
+  class TM(nn.Module):
+    """Torch Model."""
+
+    def __init__(self, in_=100, h1=300, h2=200, h3=100):
+      super().__init__()
+      self.l1 = nn.Linear(in_, h1)
+      self.bn1 = nn.BatchNorm1d(h1)
+      self.dp1 = nn.Dropout(0.5)
+      self.l2 = nn.Linear(h1, h2)
+      self.l3 = nn.Linear(h2, h3)
+      self.out = nn.Linear(h3, 1)
+
+
+    def forward(self, x):
+      x = torch.relu(self.l1(x))
+      x = self.bn1(x)
+      x = self.dp1(x)
+      x = torch.relu(self.l2(x))
+      x = torch.relu(self.l3(x))
+      return self.out(x)
+
+  tm = TM()
+  print(tm)
+  rich.print(jax.tree_map(lambda x: x.shape, dict(tm.state_dict())))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+TM(
+  (l1): Linear(in_features=100, out_features=300, bias=True)
+  (bn1): BatchNorm1d(300, eps=1e-05, momentum=0.1, affine=True,
+track_running_stats=True)
+  (dp1): Dropout(p=0.5, inplace=False)
+  (l2): Linear(in_features=300, out_features=200, bias=True)
+  (l3): Linear(in_features=200, out_features=100, bias=True)
+  (out): Linear(in_features=100, out_features=1, bias=True)
+)
+{
+    'bn1.bias': torch.Size([300]),
+    'bn1.num_batches_tracked': torch.Size([]),
+    'bn1.running_mean': torch.Size([300]),
+    'bn1.running_var': torch.Size([300]),
+    'bn1.weight': torch.Size([300]),
+    'l1.bias': torch.Size([300]),
+    'l1.weight': torch.Size([300, 100]),
+    'l2.bias': torch.Size([200]),
+    'l2.weight': torch.Size([200, 300]),
+    'l3.bias': torch.Size([100]),
+    'l3.weight': torch.Size([100, 200]),
+    'out.bias': torch.Size([1]),
+    'out.weight': torch.Size([1, 100])
+}
+#+end_example
+
+*** JAX w/ flax
+
+#+begin_src python :session jax :results output
+  import jax
+  import jax.numpy as jnp
+  from flax import linen
+
+  class JM(linen.Module):
+      """JAX and flax model."""
+
+      h1 = 300
+      h2 = 200
+      h3 = 100
+
+      @linen.compact
+      def __call__(self, x, training=True):
+          x = linen.Dense(self.h1)(x)
+          x = linen.BatchNorm()(x, use_running_average=not training)
+          x = linen.Dropout(0.2)(x, deterministic=not training)
+          x = jax.nn.relu(x)
+          x = linen.Dense(self.h2)(x)
+          x = jax.nn.relu(x)
+          x = linen.Dense(self.h3)(x)
+          x = jax.nn.relu(x)
+          x = linen.Dense(1)(x)
+          return x
+
+
+  jm = JM()
+  variables = jm.init(
+      jax.random.key(42),  # random key
+      jnp.ones((1, 100)),  # input (Batch, Features)
+      training=False,  # training mode
+  )
+
+  rich.print(jax.tree_map(lambda x: x.shape, variables))
+  print(jm.tabulate(jax.random.key(42), jnp.ones((1, 100)), training=False,
+                    compute_flops=True, compute_vjp_flops=True))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+{
+    'batch_stats': {'BatchNorm_0': {'mean': (300,), 'var': (300,)}},
+    'params': {
+        'BatchNorm_0': {'bias': (300,), 'scale': (300,)},
+        'Dense_0': {'bias': (300,), 'kernel': (100, 300)},
+        'Dense_1': {'bias': (200,), 'kernel': (300, 200)},
+        'Dense_2': {'bias': (100,), 'kernel': (200, 100)},
+        'Dense_3': {'bias': (1,), 'kernel': (100, 1)}
+    }
+}
+
+                                   JM Summary
+┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┓
+┃ path    ┃ module  ┃ inputs  ┃ outputs ┃ flops  ┃ vjp_fl… ┃ params  ┃ batch_… ┃
+┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━┩
+│         │ JM      │ -       │ float3… │ 222901 │ 778802  │         │         │
+│         │         │ float3… │         │        │         │         │         │
+│         │         │ -       │         │        │         │         │         │
+│         │         │ traini… │         │        │         │         │         │
+│         │         │ False   │         │        │         │         │         │
+├─────────┼─────────┼─────────┼─────────┼────────┼─────────┼─────────┼─────────┤
+│ Dense_0 │ Dense   │ float3… │ float3… │ 60300  │ 210600  │ bias:   │         │
+│         │         │         │         │        │         │ float3… │         │
+│         │         │         │         │        │         │ kernel: │         │
+│         │         │         │         │        │         │ float3… │         │
+│         │         │         │         │        │         │         │         │
+│         │         │         │         │        │         │ 30,300  │         │
+│         │         │         │         │        │         │ (121.2  │         │
+│         │         │         │         │        │         │ KB)     │         │
+├─────────┼─────────┼─────────┼─────────┼────────┼─────────┼─────────┼─────────┤
+│ BatchN… │ BatchN… │ -       │ float3… │ 1500   │ 5100    │ bias:   │ mean:   │
+│         │         │ float3… │         │        │         │ float3… │ float3… │
+│         │         │ -       │         │        │         │ scale:  │ var:    │
+│         │         │ use_ru… │         │        │         │ float3… │ float3… │
+│         │         │ True    │         │        │         │         │         │
+│         │         │         │         │        │         │ 600     │ 600     │
+│         │         │         │         │        │         │ (2.4    │ (2.4    │
+│         │         │         │         │        │         │ KB)     │ KB)     │
+├─────────┼─────────┼─────────┼─────────┼────────┼─────────┼─────────┼─────────┤
+│ Dropou… │ Dropout │ -       │ float3… │ 0      │ 0       │         │         │
+│         │         │ float3… │         │        │         │         │         │
+│         │         │ -       │         │        │         │         │         │
+│         │         │ determ… │         │        │         │         │         │
+│         │         │ True    │         │        │         │         │         │
+├─────────┼─────────┼─────────┼─────────┼────────┼─────────┼─────────┼─────────┤
+│ Dense_1 │ Dense   │ float3… │ float3… │ 120200 │ 420400  │ bias:   │         │
+│         │         │         │         │        │         │ float3… │         │
+│         │         │         │         │        │         │ kernel: │         │
+│         │         │         │         │        │         │ float3… │         │
+│         │         │         │         │        │         │         │         │
+│         │         │         │         │        │         │ 60,200  │         │
+│         │         │         │         │        │         │ (240.8  │         │
+│         │         │         │         │        │         │ KB)     │         │
+├─────────┼─────────┼─────────┼─────────┼────────┼─────────┼─────────┼─────────┤
+│ Dense_2 │ Dense   │ float3… │ float3… │ 40100  │ 140200  │ bias:   │         │
+│         │         │         │         │        │         │ float3… │         │
+│         │         │         │         │        │         │ kernel: │         │
+│         │         │         │         │        │         │ float3… │         │
+│         │         │         │         │        │         │         │         │
+│         │         │         │         │        │         │ 20,100  │         │
+│         │         │         │         │        │         │ (80.4   │         │
+│         │         │         │         │        │         │ KB)     │         │
+├─────────┼─────────┼─────────┼─────────┼────────┼─────────┼─────────┼─────────┤
+│ Dense_3 │ Dense   │ float3… │ float3… │ 201    │ 702     │ bias:   │         │
+│         │         │         │         │        │         │ float3… │         │
+│         │         │         │         │        │         │ kernel: │         │
+│         │         │         │         │        │         │ float3… │         │
+│         │         │         │         │        │         │         │         │
+│         │         │         │         │        │         │ 101     │         │
+│         │         │         │         │        │         │ (404 B) │         │
+├─────────┼─────────┼─────────┼─────────┼────────┼─────────┼─────────┼─────────┤
+│         │         │         │         │        │   Total │ 111,301 │ 600     │
+│         │         │         │         │        │         │ (445.2  │ (2.4    │
+│         │         │         │         │        │         │ KB)     │ KB)     │
+└─────────┴─────────┴─────────┴─────────┴────────┴─────────┴─────────┴─────────┘
+
+                      Total Parameters: 111,901 (447.6 KB)
+#+end_example
+
+** TrainState and Train loop
+
+Usually, we need to store the state of the model, like the parameters, the optimizer, the learning rate scheduler, etc.
+
+*** PyTorch
+
+#+begin_src python
+  import torch
+  import torch.nn as nn
+  from typing import NamedTuple
+
+
+  def train_loop(conf: dict, dataloader):
+    """The pytorch training loop."""
+    model = TM(conf)
+
+    loss_fn = nn.CrossEntropyLoss()
+
+    optim = torch.optim.Adam(model.parameters(), lr=conf["lr"])
+
+    state = TrainState(
+      loss=0,
+      state=model.state_dict(),
+      optim_state=optim.state_dict(),
+      step=0,
+      metric=0,
+    )
+
+    model.to("cuda")
+
+    def train_step(batch, ys):
+      model.train()
+      batch, ys = batch.to("cuda"), ys.to("cuda")
+
+      # forward
+      loss = loss_fn(model(batch), ys)
+      # grad
+      loss.backward()
+      # update params
+      optim.step()
+      optim.zero_grad()
+
+      return loss
+
+
+    for e in range(conf["epochs"]):
+      model.train()
+      for i, (batch, ys) in dataloader:
+        loss = train_step(batch, ys)
+
+        # eval
+        model.eval()
+        metric = ...  # compute metric
+
+        state = state._replace(
+          loss=loss.item(),
+          state=model.state_dict(),
+          optim_state=optim.state_dict(),
+          step=state.step + 1,
+          metric=metric,
+        )
+
+    # save
+    torch.save(state, "model.pt")
+#+end_src
+
+*** JAX
+
+#+begin_src python
+  import jax
+  import jax.numpy as jnp
+  import optax
+  from flax.core.scope import Collection
+  from flax.training import train_state
+  import pickle
+
+  class TrainState(train_state.TrainState):
+      """Training states."""
+
+      # default
+      # apply_fn  # the model forward function
+      # params
+      # tx  # optim
+      # step  # training step
+
+      # our custom
+      batch_stats: Collection
+      # our metrics
+      loss: jax.Array
+      metric: jax.Array
+
+
+  def create_train_state(conf: dict):
+      """Create initial training state."""
+      model = JM(conf)
+
+      @jax.jit
+      def init() -> Collection:
+          return model.init(jax.random.key(42), jnp.ones((1, 100)), training=False)
+
+      variables = init()
+
+      return TrainState.create(
+          apply_fn=model.apply,
+          params=variables["params"],
+          tx=optax.adamw(conf["lr"]),
+          model_state=Collection({}),
+          loss=jnp.inf,
+          metric=0.0,
+          batch_stats=variables["batch_stats"],
+          step=0,
+      )
+
+
+  @jax.jit
+  def train_step(state, rng, batch, ys):
+
+    @jax.jit  # optional since we already have jit outside train_step
+    @jax.value_and_grad
+    def lossfn(params):
+      return optax.cross_entropy_loss(
+          state.apply_fn(
+              {
+                  "params": state.params,
+                  "batch_stats": state.batch_stats,
+              },
+              batch,
+              training=True,
+              rngs={"dropout": rng},
+              mutable=["batch_stats"],
+          ),
+          ys,
+      ).mean()
+
+    loss, grad = lossfn(state.params)
+    # the step, params, tx_states will automatically be updated
+    return state.apply_gradients(grad=grad, loss=loss)
+
+
+  @jax.jit
+  def eval_step(state, batch, ys):
+
+    value = state.apply_fn(
+      {"params": state.params, "batch_stats": state.batch_stats},
+      batch,
+      training=False,
+    )
+    metric = ...
+    return metric
+
+
+  def train_loop(conf: dict, dataloader):
+      """Training loop."""
+      state = create_train_state(conf)
+
+      for epoch in range(conf["epochs"]):
+          for batch, ys in dataloader:
+              state = train_step(state, batch)
+
+              # eval
+              metric = eval_step(state, batch, ys)
+              state = state.replace(metric=metric)
+
+      # save
+      with open("model.pkl", "wb") as f:
+        pickle.dump({"params": state.params,
+                     "tx": state.tx,
+                     "batch_stats": state.batch_stats,
+                     "metric": state.metric},
+                    f)
+#+end_src
+
+* Parallel and Distributed Computing
+
+** Resource
+
++ Flax tutorial: https://flax.readthedocs.io/en/latest/guides/parallel_training/index.html
++ JAX tutorial: https://jax.readthedocs.io/en/latest/notebooks/Distributed_arrays_and_automatic_parallelization.html
+
+** Transfer data between devices
+
+#+begin_src python :results output
+  import jax
+  import jax.numpy as jnp
+  import os
+
+  os.environ["XLA_FLAGS"] = "--xla_force_host_platform_device_count=8"
+
+  x = jnp.ones((8, 8))
+
+  #1. check devices
+  print("global devices:", jax.devices())
+  print("local devices:", jax.local_devices())
+  # you can specify the device type
+  print("cpu devices:", jax.devices("cpu"))
+
+  #2. check the device of x
+  print("x devices:", x.devices())
+
+  # Put x to a specific device
+  y = jax.device_put(x, jax.devices("cpu")[1])
+  # Get y back to host (numpy array)
+  z = jax.device_get(y)
+  print("x devices:", x.devices())
+  print("y devices:", y.devices())
+  print("z type:", type(z))
+#+end_src
+
+#+RESULTS:
+: global devices: [CpuDevice(id=0), CpuDevice(id=1), CpuDevice(id=2), CpuDevice(id=3), CpuDevice(id=4), CpuDevice(id=5), CpuDevice(id=6), CpuDevice(id=7)]
+: local devices: [CpuDevice(id=0), CpuDevice(id=1), CpuDevice(id=2), CpuDevice(id=3), CpuDevice(id=4), CpuDevice(id=5), CpuDevice(id=6), CpuDevice(id=7)]
+: cpu devices: [CpuDevice(id=0), CpuDevice(id=1), CpuDevice(id=2), CpuDevice(id=3), CpuDevice(id=4), CpuDevice(id=5), CpuDevice(id=6), CpuDevice(id=7)]
+: x devices: {CpuDevice(id=0)}
+: x devices: {CpuDevice(id=0)}
+: y devices: {CpuDevice(id=1)}
+: z type: <class 'numpy.ndarray'>
+
+** Use =pmap= to train with data parallel.
+
+#+begin_src python
+  import jax
+  from functools import partial
+
+
+  @partial(jax.pmap, static_broadcasted_argnums=(0,))
+  def create_train_state(conf: dict):
+      """Create initial training state."""
+      ...
+
+
+  @jax.pmap
+  def train_step(state, rng, batch, ys):
+      ...
+
+
+  @jax.jit
+  def eval_step(state, batch, ys):
+
+    preds = state.apply_fn(  # (batch, 1)
+      {"params": state.params, "batch_stats": state.batch_stats},
+      batch,
+      training=False,
+    )
+    logits = jax.nn.sigmoid(preds)
+    acc = jnp.mean((logits > 0.5) == ys)
+    return acc
+
+
+  @partial(jax.pmap, axis_name="batch")
+  def eval_step_pmap(state, batch, ys):
+
+    preds = state.apply_fn(  # (devices, batch, 1)
+      {"params": state.params, "batch_stats": state.batch_stats},
+      batch,
+      training=False,
+    )
+    logits = jax.nn.sigmoid(preds)
+    pacc = jax.lax.pmean((logits > 0.5) == ys, axis_name="batch")
+    acc = jnp.mean(pacc)
+    return acc
+#+end_src
+
+** Use jit with sharding.
+
+sharding, split a large array into smaller pieces, and each piece is stored on a different device.
+
+*** Basic
+
+  #+begin_src python :session jaxp :results output
+    import jax
+    import jax.numpy as jnp
+    from jax.experimental import mesh_utils
+    from jax.sharding import PositionalSharding, NamedSharding
+    import numpy as np
+
+    import os
+
+    os.environ["XLA_FLAGS"] = "--xla_force_host_platform_device_count=8"
+
+    dc = jax.device_count()
+    print(f"we have {dc} devices.")
+
+    # If you want to track gpu usage
+    # install go
+    # pip install jax-smi
+    # from jax_smi import initialise_tracking
+    # initialise_tracking()
+
+    # batch feature (batch, feature), here batch = Nxdevice_count
+    xs = jax.random.normal(jax.random.key(42), (8*dc*64, 8*dc*64))
+
+    # dmesh
+    dmesh = mesh_utils.create_device_mesh((dc,))
+    # or
+    dmesh = np.asarray(jax.devices()).reshape((dc,))
+
+    sharding = PositionalSharding(dmesh)
+
+    # since xs shappe is (batch, feature)
+    sharding = sharding.reshape((-1, 1))
+    # put jax across devices
+    print(xs.devices())
+    xs = jax.device_put(xs, sharding)
+    print(xs.devices())
+
+    jax.debug.visualize_array_sharding(xs)
+  #+end_src
+
+#+RESULTS:
+#+begin_example
+we have 8 devices.
+{CpuDevice(id=0)}
+{CpuDevice(id=6), CpuDevice(id=5), CpuDevice(id=4), CpuDevice(id=0), CpuDevice(id=1), CpuDevice(id=7), CpuDevice(id=2), CpuDevice(id=3)}
+┌───────────────────────┐
+│         CPU 0         │
+├───────────────────────┤
+│         CPU 1         │
+├───────────────────────┤
+│         CPU 2         │
+├───────────────────────┤
+│         CPU 3         │
+├───────────────────────┤
+│         CPU 4         │
+├───────────────────────┤
+│         CPU 5         │
+├───────────────────────┤
+│         CPU 6         │
+├───────────────────────┤
+│         CPU 7         │
+└───────────────────────┘
+#+end_example
+
+*** Different shardings
+
+#+begin_src python :session jaxp :results output
+  xs = jax.device_put(xs, sharding.reshape(1, -1))
+
+  jax.debug.visualize_array_sharding(xs)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+┌───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┐
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│ CPU 0 │ CPU 1 │ CPU 2 │ CPU 3 │ CPU 4 │ CPU 5 │ CPU 6 │ CPU 7 │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+└───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┘
+#+end_example
+
+#+begin_src python :session jaxp :results output
+  xs = jax.device_put(xs, sharding.reshape(dc // 2, -1))
+  jax.debug.visualize_array_sharding(xs)
+#+end_src
+
+#+RESULTS:
+: ┌──────────┬──────────┐
+: │  CPU 0   │  CPU 1   │
+: ├──────────┼──────────┤
+: │  CPU 2   │  CPU 3   │
+: ├──────────┼──────────┤
+: │  CPU 4   │  CPU 5   │
+: ├──────────┼──────────┤
+: │  CPU 6   │  CPU 7   │
+: └──────────┴──────────┘
+
+*** Performance
+
+#+begin_src python :session jaxp :results output
+  xs = jax.device_put(xs, sharding.reshape(dc // 2, -1))
+  xsc0 = jax.device_put(xs, jax.devices()[0])
+  import time
+
+  cos = jax.jit(jnp.cos)
+  cos(xsc0).block_until_ready()
+  cos(xs).block_until_ready()
+
+  t1 = time.time()
+  for _ in range(20):
+    r = cos(xsc0).block_until_ready()
+  t2 = time.time()
+
+  t3 = time.time()
+  for _ in range(20):
+    rr = cos(xs).block_until_ready()
+  t4 = time.time()
+
+  cos = jax.pmap(jnp.cos)
+
+  pxs = xsc0.reshape(dc, -1, xsc0.shape[-1])
+
+  t5 = time.time()
+  for _ in range(20):
+    rrr = cos(pxs).block_until_ready()
+  t6 = time.time()
+
+  print("In single device: ", t2 - t1)
+  print("In multi device: ", t4 - t3)
+  print("In multi device pmap: ", t6 - t5)
+#+end_src
+
+#+RESULTS:
+: In single device:  0.5627968311309814
+: In multi device:  0.3160829544067383
+: In multi device pmap:  0.4480609893798828
+
+*** Use sharding with =jit=
+
+#+begin_src python :session jaxp :results output
+  xs = jax.device_put(xs, sharding.reshape(dc, -1))
+
+  def f(x):
+    return jnp.sin(x)
+
+
+  # in with None, out with (dc, 1)
+
+  print("before:")
+  jax.debug.visualize_array_sharding(xs)
+
+  out = jax.jit(f, in_shardings=sharding.reshape(dc, -1), out_shardings=sharding.reshape(-1, dc))(xs)
+  print("after:")
+  jax.debug.visualize_array_sharding(out)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+before:
+┌───────────────────────┐
+│         CPU 0         │
+├───────────────────────┤
+│         CPU 1         │
+├───────────────────────┤
+│         CPU 2         │
+├───────────────────────┤
+│         CPU 3         │
+├───────────────────────┤
+│         CPU 4         │
+├───────────────────────┤
+│         CPU 5         │
+├───────────────────────┤
+│         CPU 6         │
+├───────────────────────┤
+│         CPU 7         │
+└───────────────────────┘
+after:
+┌───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┐
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│ CPU 0 │ CPU 1 │ CPU 2 │ CPU 3 │ CPU 4 │ CPU 5 │ CPU 6 │ CPU 7 │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+│       │       │       │       │       │       │       │       │
+└───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┘
+#+end_example
+
+* JAX echosystem
+
++ JAX
++ NN library
+  - Flax  (Google)
+  - Haiku  (Deepmind)
+  - Trax  (Google brain)
+  - HuggingFace (Flax)
+  - keras
+  - jraph  (GNN)
+  - RLax (Deepmind, RL)
+  - Coax (Microsoft, RL)
++ Optimizer
+  - jaxopt
+  - optax
++ Others
+  - orbax-checkpoint
+  - jax-md  (molecular dynamics)
+  - mpi4jax
