@@ -91,6 +91,7 @@
 == Content
 
 #align(horizon)[
+  - What is State Space?
   - What is SSM?
   - Why SSM?
   - Motivation
@@ -112,7 +113,7 @@
 == What Is State Space Model (SSM)?
 
 #grid(columns: 2)[
-  #align(center, image("ssm.png", height: 40%))
+  #align(center, image("ssm.png", height: 38%))
 ][
   #align(horizon + center)[
     $ x'(t) &= A x(t) + B u(t) \
@@ -147,7 +148,6 @@
 
   - *Generalization*
     - RNN, CNN, Transformer, Neural Differential Equations (NDEs) in different field
-    - At least, at the time SSM were proposed
   - *Computational Efficiency*
     - CNNs and Transformers are not efficient autoregressive inference
   - *Long range dependencies*

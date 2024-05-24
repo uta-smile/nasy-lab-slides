@@ -1,4 +1,4 @@
-% Created 2023-10-13 Fri 10:45
+% Created 2023-10-13 Fri 15:55
 % Intended LaTeX compiler: xelatex
 \documentclass[aspectratio=1610,xcolor={dvipsnames},hyperref={colorlinks,unicode,linkcolor=violet,anchorcolor=BlueViolet,citecolor=YellowOrange,filecolor=black,urlcolor=Aquamarine}]{beamer}
 \usepackage{graphicx}
@@ -53,11 +53,11 @@
 \usefonttheme{serif}
 \useinnertheme{circles}
 \author{Nasy}
-\date{Jul 16, 2023}
-\title{LLM as Optimizers and Meta Optimizers}
+\date{Oct 13, 2023}
+\title{LLM as Optimizers and Mesa Optimizers Introduction}
 \hypersetup{
  pdfauthor={Nasy},
- pdftitle={LLM as Optimizers and Meta Optimizers},
+ pdftitle={LLM as Optimizers and Mesa Optimizers Introduction},
  pdfkeywords={},
  pdfsubject={},
  pdfcreator={Emacs 29.0.50 (Org mode 9.5.5)}, 
@@ -74,12 +74,12 @@
 
 \setcounter{tocdepth}{2}
 \section{Large Language Model as Optimizers}
-\label{sec:org579998a}
+\label{sec:org5ea8b9b}
 
 \subsection{Introduction}
-\label{sec:orgb8ef026}
+\label{sec:orge4454b4}
 
-\begin{frame}[label={sec:orge2c77d7}]{Introduction}
+\begin{frame}[label={sec:org4eeaa5c}]{Introduction}
 \begin{itemize}
 \item What is LLM as Optimizers?
 \begin{itemize}
@@ -90,19 +90,19 @@
 \end{itemize}
 \end{frame}
 \subsection{Optimization by PROmpting (OPRO)}
-\label{sec:org639c87e}
+\label{sec:org2107dba}
 
-\begin{frame}[label={sec:org4cabf1a}]{Optimization by PROmpting (OPRO)}
+\begin{frame}[label={sec:org7974b56}]{Optimization by PROmpting (OPRO)}
 \begin{center}
 \includegraphics[height=8cm]{./p1.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org18277b0}]{Example}
+\begin{frame}[label={sec:org830f28f}]{Example}
 \begin{center}
 \includegraphics[height=8cm]{./p2.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org62ba67a}]{Motivation}
+\begin{frame}[label={sec:orgf74c630}]{Motivation}
 \begin{itemize}
 \item Making use of natural language descriptions
 \begin{itemize}
@@ -114,7 +114,7 @@
 \end{itemize}
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org2421be3}]{Meta-Prompt Design}
+\begin{frame}[label={sec:orgcb6c590}]{Meta-Prompt Design}
 \begin{itemize}
 \item Optimization problem description
 \begin{itemize}
@@ -127,7 +127,7 @@
 \end{itemize}
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orga371058}]{Solution Generation}
+\begin{frame}[label={sec:org6482144}]{Solution Generation}
 \begin{itemize}
 \item Optimization stability.
 \begin{itemize}
@@ -140,40 +140,40 @@
 \end{itemize}
 \end{frame}
 \subsection{Mathematical Optimization}
-\label{sec:org4a75fc6}
+\label{sec:org4f7a964}
 
-\begin{frame}[label={sec:org6894215}]{Mathematical Optimization}
+\begin{frame}[label={sec:org164caf8}]{Mathematical Optimization}
 \begin{center}
 \includegraphics[width=13cm]{./p3.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgd5d5869}]{Mathematical Optimization}
+\begin{frame}[label={sec:org8a0cca4}]{Mathematical Optimization}
 \begin{center}
 \includegraphics[width=13cm]{./p4.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgd30705c}]{Limitations}
+\begin{frame}[label={sec:orgcd2a966}]{Limitations}
 Limitations. We would like to note that OPRO is designed for neither outperforming the stateof-the-art gradient-based optimization algorithms for continuous mathematical optimization, nor
 surpassing the performance of specialized solvers for classical combinatorial optimization problems
 such as TSP. Instead, the goal is to demonstrate that LLMs are able to optimize different kinds
 of objective functions simply through prompting, and reach the global optimum for some smallscale problems.
 \end{frame}
 \subsection{Prompt Optimization}
-\label{sec:org928cf3d}
+\label{sec:org4ed3be2}
 
-\begin{frame}[label={sec:org34b61c0}]{Prompt Optimization}
+\begin{frame}[label={sec:org24f9bad}]{Prompt Optimization}
 \begin{center}
 \includegraphics[height=8cm]{./p5.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org6a71f6a}]{Prompt Optimization Design}
+\begin{frame}[label={sec:orgcf57905}]{Prompt Optimization Design}
 \begin{itemize}
 \item Optimization problem examples.
 \item Optimization trajectory
 \item Meta-instructions
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orgce30a87}]{Results}
+\begin{frame}[label={sec:orgd1d50a3}]{Results}
 \begin{center}
 \includegraphics[height=3.5cm]{./p6.png}
 \end{center}
@@ -182,21 +182,21 @@ of objective functions simply through prompting, and reach the global optimum fo
 \includegraphics[height=3.5cm]{./p7.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org235868d}]{Results}
+\begin{frame}[label={sec:orgd9e9b57}]{Results}
 \begin{center}
 \includegraphics[height=8cm]{./p8.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org4392767}]{Results BBH}
+\begin{frame}[label={sec:orge40bc21}]{Results BBH}
 See paper p15.
 \end{frame}
-\begin{frame}[label={sec:org1af3f91}]{Suggestions}
+\begin{frame}[label={sec:orgfefe7e0}]{Suggestions}
 \url{https://github.com/AGI-Edgerunners/LLM-Optimizers-Papers}
 \end{frame}
 \section{Conclusion}
-\label{sec:orge21aa08}
+\label{sec:org5a8d72f}
 
-\begin{frame}[label={sec:orgaeb87e2}]{Conclusion}
+\begin{frame}[label={sec:orgb6fffa1}]{Conclusion}
 \begin{itemize}
 \item Optimization by PROmpting (OPRO)
 \begin{itemize}
@@ -217,9 +217,9 @@ See paper p15.
 \end{itemize}
 \end{frame}
 \section{Uncovering mesa-optimization algorithms in Transformers}
-\label{sec:orgc0843ca}
+\label{sec:orgf77d803}
 
-\begin{frame}[label={sec:orgb5bb6c0}]{Introduction}
+\begin{frame}[label={sec:org446fb73}]{Introduction}
 \begin{itemize}
 \item Why?
 \begin{itemize}
@@ -235,32 +235,30 @@ See paper p15.
 \end{itemize}
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orged38c7b}]{Mesa-Optimization}
+\begin{frame}[label={sec:org015f920}]{Mesa-Optimization}
 \begin{center}
 \includegraphics[width=13cm]{./p9.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgd6b84c7}]{Mesa-Optimization}
+\begin{frame}[label={sec:org233d215}]{Mesa-Optimization}
 \begin{itemize}
 \item An optimizer (like gradient descent, or evolution) produces another optimizer (like complex AIs, or humans). When this happens, the second optimizer is called a mesa-optimizer.
 
 \item Recently, This phenomenon has been recently termed mesa-optimization: minimizing a generic autoregressive loss gives rise to a subsidiary gradient-based optimization algorithm running inside the forward pass of a Transformer.
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orgee1f4ed}]{Mesa-Optimization}
+\begin{frame}[label={sec:orgf804976}]{Mesa-Optimization}
 \begin{itemize}
 \item We might train a neural network to play a game using a gradient descent algorithm as our base optimizer. However, after many iterations, the neural network might develop some strategy or heuristic for playing the game. This strategy or heuristic can be thought of as a secondary optimization process or mesa optimizer.
 
 \item An essential consideration is that the objective of the mesa optimizer might not perfectly align with that of the base optimizer. For instance, while the base optimizer's objective might be to have the neural network perform well on training data, the mesa optimizer might be more concerned with quickly achieving rewards without considering long-term consequences. This misalignment can lead to unpredictable or undesired behaviors.
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org793bf7e}]{Mesa-Optimization}
-\begin{center}
-\includegraphics[width=13cm]{./p10.png}
-\end{center}
+\begin{frame}[label={sec:org4f0b494}]{Mesa-Optimization}
+p10
 \end{frame}
 \section{Reference}
-\label{sec:org076597c}
+\label{sec:org5924acd}
 
 \begin{frame}[allowframebreaks]{Reference}
 \printbibliography

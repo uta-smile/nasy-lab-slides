@@ -3,8 +3,8 @@
 #+options: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
 #+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
 #+options: timestamp:t title:t toc:1 todo:t |:t
-#+title: LLM as Optimizers and Meta Optimizers
-#+date: <2023-07-16 Sun>
+#+title: LLM as Optimizers and Mesa Optimizers Introduction
+#+date: <2023-10-13 Fri>
 #+author: Nasy
 #+email: nasyxx@gmail.com
 #+language: en
@@ -137,7 +137,6 @@ https://github.com/AGI-Edgerunners/LLM-Optimizers-Papers
   - Meta-instructions
 + Results
 
-
 * Uncovering mesa-optimization algorithms in Transformers
 
 *** Introduction
@@ -168,8 +167,7 @@ https://github.com/AGI-Edgerunners/LLM-Optimizers-Papers
 
 *** Mesa-Optimization
 
-#+attr_latex: :width 13cm
-[[./p10.png]]
+p10
 
 * Reference
 
