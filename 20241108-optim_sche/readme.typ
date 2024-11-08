@@ -1,6 +1,7 @@
 #import "@preview/touying:0.5.3": *
 #import themes.simple: *
 #import "@preview/pinit:0.2.2": *
+#import "@preview/shadowed:0.1.2": shadowed
 
 #show: simple-theme.with(
   aspect-ratio: "16-9",
@@ -53,7 +54,8 @@
     #body
   ])),
   config-colors(
-    neutral-lightest: rgb("#ffffff"),
+    // neutral-lightest: rgb("#ffffff"),
+    neutral-lightest: rgb("#F2ECDE"),
     neutral-darkest: rgb("#526069"),
   ),
   footer-right: none,
@@ -590,6 +592,12 @@ else:
 #v(-1.5em)
 
 #figure(image("p4.png", width: 80%))
+
+== SOAP & Schedule Free
+
+#v(-0.5em)
+
+#figure(image("p5.jpeg", height: 89%))
 
 = Reference
 
